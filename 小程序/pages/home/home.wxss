@@ -126,3 +126,17 @@ page {
   --td-tab-item-color: #666;
   --td-tab-track-color: red;
 }
+
+.demopng {
+  width: 100%;
+}
+
+.text1 {
+  height: 50rpx;
+  font-family: AlibabaPuHuiTi_3_55_Regular;
+  font-weight: 400;
+  font-size: 36rpx;
+  color: #000000;
+  text-align: center;
+  margin: 32rpx 0;
+}

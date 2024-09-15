@@ -1,6 +1,14 @@
 <template>
-  <Screen />
-  <el-table v-loading="loading" :data="goodList" :row-style="{ height: '50px' }">
+  <div style="display: flex">
+    <div>
+      <Screen />
+    </div>
+    <el-button style="margin-left: 20px" type="primary" @click="addDialogVisible = true"
+      >+添加分类</el-button
+    >
+  </div>
+  <addDialog v-model="addDialogVisible" @addGoodsType="addGoodsType" />
+  <el-table v-loading="loading" :data="goodsTypeList" :row-style="{ height: '50px' }">
     <el-table-column type="index" label="序号" width="80">
       <template #default="scope">
         <div>
@@ -8,52 +16,7 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column prop="name" label="设备名称" />
-    <el-table-column prop="did" label="ID" />
-    <el-table-column prop="site" label="所属站点">
-      <template #default="scope">
-        <div v-if="scope.row.sites && scope.row.sites.length">
-          {{ scope.row.sites[0].name }}
-        </div>
-      </template>
-    </el-table-column>
-
-    <el-table-column prop="location" label="当前位置（经纬度）" min-width="120">
-      <template #default="scope">
-        <div v-if="scope.row.location">
-          {{ scope.row.location.longitude }},
-          {{ scope.row.location.latitude + ' ' }}
-          <a
-            style="cursor: pointer; margin-left: 5px"
-            @click="currentDevice = { ...scope.row, modalType: 'location' }"
-          >
-            查看地图
-          </a>
-        </div>
-      </template>
-    </el-table-column>
-    <el-table-column prop="online" label="在线状态">
-      <template #default="scope">
-        <div :style="{ color: scope.row.online ? '#333' : '#EB415F' }">
-          {{ scope.row.online ? '在线' : '离线' }}
-        </div>
-      </template>
-    </el-table-column>
-
-    <el-table-column prop="online" label="运行状态">
-      <template #default="scope">
-        <div v-if="scope.row.state" style="color: #333">
-          {{ scope.row.state.pwr && scope.row.state.pwr ? '使用' : '空闲' }}
-        </div>
-        <div v-if="!scope.row.state">空闲</div>
-      </template>
-    </el-table-column>
-    <el-table-column prop="description" label="备注" />
-    <el-table-column prop="" label="详情">
-      <template #default="scope">
-        <a style="cursor: pointer" @click="goDeviceDetail(scope.row.did)">详情</a>
-      </template>
-    </el-table-column>
+    <el-table-column prop="name" label="分类名称" />
   </el-table>
   <div style="display: flex; padding-top: 10px">
     <el-pagination
@@ -71,15 +34,18 @@
 
 <script setup lang="ts">
 import { reactive, ref, onMounted, watchEffect, computed, watch } from 'vue'
-import { searchGoods } from '@/api/goods.ts'
+import { addGoodsTypeApi, getGoodsTypeListApi } from '@/api/goodsType.ts'
 import moment from 'moment'
+import addDialog from './addDialog.vue'
 import { useRouter, useRoute } from 'vue-router'
+import { ElMessage } from 'element-plus'
 import Screen from './screen.vue'
 import { useStore, mapState } from 'vuex'
 const $store = useStore()
 const route = useRoute()
 
 const loading = ref(true)
+const addDialogVisible = ref(false)
 
 let obj = mapState('deviceMng', ['screen'])
 let screen: any = computed(obj.screen.bind({ $store }))
@@ -87,7 +53,7 @@ let screen: any = computed(obj.screen.bind({ $store }))
 watch(
   () => route.query,
   (val: any) => {
-    if (route.path === '/deviceMng/goodList') {
+    if (route.path === '/goodsMng/goodsClassification') {
       pagination.currentPage = val.page * 1
     }
   }
@@ -98,7 +64,7 @@ watch(
   (newValue, oldValue) => {
     pagination.currentPage = 1
     router.push({
-      path: '/deviceMng/goodList',
+      path: '/goodsMng/goodsClassification',
       query: { page: 1 }
     })
   },
@@ -107,7 +73,7 @@ watch(
 
 const router = useRouter()
 
-const goodList = ref([])
+const goodsTypeList = ref<Object[]>([])
 const currentDevice = ref<any>({})
 
 interface pagination_type {
@@ -122,10 +88,10 @@ const pagination = reactive<pagination_type>({
 })
 
 const handleCurrentChange = (currentPage: any) => {
-  router.push({ path: '/deviceMng/goodList', query: { page: currentPage } })
+  router.push({ path: '/deviceMng/goodsTypeList', query: { page: currentPage } })
 }
 watchEffect(() => {
-  pagination.currentPage && _searchGoods()
+  pagination.currentPage && getGoodsTypeList()
 })
 
 const goDeviceDetail = (did: string) => {
@@ -139,56 +105,38 @@ onMounted(() => {
   pagination.currentPage = router.currentRoute.value.query.page * 1
 })
 
-const closeLocationModal = () => {
-  currentDevice.value = {}
-}
-async function _searchGoods() {
-  loading.value = true
-
+const addGoodsType = async (form: object) => {
   try {
-    const { deviceName, siteName, online } = screen.value
-    interface Screen {
-      online?: Boolean
-      deviceName?: string
-      siteName?: string
-      time?: number
-    }
-    const screenParams: Screen = {}
-    if (deviceName !== '') {
-      screenParams.deviceName = deviceName
-    }
-    if (siteName !== '') {
-      screenParams.siteName = siteName
-    }
-    if (online) {
-      screenParams.online = online * 1 === 1 ? true : false
-      screenParams.time = 300
-    }
+    await addGoodsTypeApi({
+      ...form
+    })
+    addDialogVisible.value = false
+    ElMessage({
+      message: '添加成功',
+      type: 'success'
+    })
+    getGoodsTypeList()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+async function getGoodsTypeList() {
+  loading.value = true
+  try {
     const params = {
       page: pagination.currentPage,
       pageSize: pagination.pageSize
     }
-
-    const res: any = await searchGoods({
-      ...params,
-      ...screenParams
+    const res: any = await getGoodsTypeListApi({
+      ...params
     })
     if (!res.data.list) {
-      goodList.value = []
+      goodsTypeList.value = []
       return
     }
     let list = [...res.data.list]
-    list = list.map((dev) => {
-      if (dev.heartBeat && dev.heartBeat.time) {
-        const diffMinutes = moment().diff(moment(dev.heartBeat.time * 1000), 'minutes')
-        return {
-          ...dev,
-          online: diffMinutes < 5 ? true : false
-        }
-      }
-      return { ...dev, online: false }
-    })
-    goodList.value = list
+    goodsTypeList.value = list
     pagination.total = res.data.total
   } catch (error) {
     console.error(error)

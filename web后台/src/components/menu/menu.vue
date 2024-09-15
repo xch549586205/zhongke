@@ -13,8 +13,8 @@
       :key="item.path + index"
       :item="item"
       :index="index + ''"
-    /> </el-menu
-  >A
+    />
+  </el-menu>
 </template>
 
 <script lang="ts" setup>

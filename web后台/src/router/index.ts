@@ -1,12 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 
 export const routes = [
-  {
-    path: '/home',
-    name: '首页',
-    component: HomeView
-  },
   {
     path: '/login',
     name: 'login',
@@ -31,6 +25,13 @@ export const routes = [
             query: { page: 1 },
             hide: true,
             component: () => import('../views/goodsMng/myGoods/onSale/index.vue')
+          },
+          {
+            path: '/goodsMng/myGoods/onSale/goodsDetail',
+            name: '添加商品',
+            query: { id: '' },
+            hide: true,
+            component: () => import('../views/goodsMng/myGoods/onSale/goodsDetail/index.vue')
           },
           {
             path: '/goodsMng/myGoods/offShelf',
@@ -59,6 +60,42 @@ export const routes = [
         name: '商品分类',
         query: { page: 1 },
         component: () => import('../views/goodsMng/goodsClassification/index.vue')
+      }
+    ]
+  },
+  {
+    path: '/enableMng',
+    redirect: '/enableMng/banner',
+    name: '赋能',
+    children: [
+      {
+        path: '/enableMng/banner',
+        name: 'banner管理',
+        component: () => import('../views/enableMng/banner/index.vue')
+      },
+      {
+        path: '/enableMng/promotion',
+        name: '内容推广',
+        component: () => import('../views/enableMng/promotion/index.vue')
+      }
+    ]
+  },
+  {
+    path: '/userMng',
+    redirect: '/userMng/userList?page=1',
+    name: '人员',
+    children: [
+      {
+        path: '/userMng/userList',
+        name: '人员管理',
+        query: { page: 1 },
+        component: () => import('../views/userMng/userList/index.vue')
+      },
+      {
+        path: '/userMng/distributionList',
+        name: '下级分销',
+        query: { page: 1 },
+        component: () => import('../views/userMng/distributionList/index.vue')
       }
     ]
   }

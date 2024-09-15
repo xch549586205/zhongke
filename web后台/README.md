@@ -1,5 +1,6 @@
 # vue-project
-
+// admin 默认密码 ehyeop%$sss#(*S1eeG)NB
+// achang22 默认密码 hyop%$#(*S1G)NB
 This template should help get you started developing with Vue 3 in Vite.
 
 ## Recommended IDE Setup

@@ -1,22 +1,17 @@
 <template>
   <div class="screen">
-    <div class="flex" style="width: 40%">
-      <el-input v-model="deviceName" placeholder="输入分类名称搜索" class="input-with-select">
-        <template #append>
-          <el-button
-            @click="_updateScreen('deviceName', deviceName)"
-            style="background: var(--el-color-primary)"
-            :icon="Search"
-          />
-        </template>
-      </el-input>
-      <el-button>重置</el-button>
+    <el-input v-model="deviceName" placeholder="输入分类名称搜索" class="input-with-select">
+      <template #append>
+        <el-button
+          @click="_updateScreen('deviceName', deviceName)"
+          style="background: var(--el-color-primary)"
+          :icon="Search"
+        />
+      </template>
+    </el-input>
+    <el-button>重置</el-button>
 
-      <el-button type="primary">查询</el-button>
-    </div>
-    <div>
-      <el-button type="primary">+添加分类</el-button>
-    </div>
+    <el-button type="primary">查询</el-button>
   </div>
 </template>
 
@@ -42,21 +37,6 @@ onMounted(() => {
   siteName.value = screen.value.siteName
   deviceName.value = screen.value.deviceName
 })
-
-const options = [
-  {
-    value: 0,
-    label: '全部状态'
-  },
-  {
-    value: 1,
-    label: '在线'
-  },
-  {
-    value: 2,
-    label: '离线'
-  }
-]
 </script>
 
 <style lang="less" scoped>

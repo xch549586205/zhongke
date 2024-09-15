@@ -8,10 +8,11 @@ import {
   getDistance
 } from "../../utils/util";
 import Toast from 'tdesign-miniprogram/toast/index';
-const computedBehavior = require("miniprogram-computed").behavior;
-
+import {
+  behavior
+} from "miniprogram-computed"
 Page({
-  behaviors: [computedBehavior],
+  behaviors: [behavior],
   data: {
     imgSrcs: [],
     tabList: [],
@@ -82,6 +83,9 @@ Page({
   },
   async getLocation() {
     const that = this;
+    if (this.data.location.latitude) {
+      return
+    }
     wx.getLocation({
       type: "wgs84",
       async success(res) {

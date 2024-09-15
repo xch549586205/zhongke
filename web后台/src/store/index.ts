@@ -2,6 +2,7 @@ import goodsMng from './modules/goodsMng'
 import siteMng from './modules/siteMng'
 import taskMng from './modules/taskMng'
 import userMng from './modules/userMng'
+import globalData from './modules/globalData'
 import { createStore } from 'vuex'
 
 const store = createStore({
@@ -11,7 +12,8 @@ const store = createStore({
     goodsMng,
     siteMng,
     taskMng,
-    userMng
+    userMng,
+    globalData
   }
 })
 export default store

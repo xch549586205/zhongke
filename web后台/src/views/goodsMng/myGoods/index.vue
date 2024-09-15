@@ -20,13 +20,17 @@ const activeName = ref<string>('onSale')
 
 onMounted(() => {
   console.log(router.currentRoute.value.name)
-  activeName.value = tabMap[router.currentRoute.value.name] || ''
+  if (tabMap[router.currentRoute.value.name]) {
+    activeName.value = tabMap[router.currentRoute.value.name]
+  }
 })
 
 watch(
   () => router.currentRoute.value.name,
   (name: any) => {
-    activeName.value = tabMap[name] || ''
+    if (tabMap[name]) {
+      activeName.value = tabMap[name]
+    }
   }
 )
 watch(

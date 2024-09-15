@@ -9,13 +9,13 @@ import router from '@/router'
 
 // 请求超时时间
 axios.defaults.timeout = 10000
-axios.defaults.baseURL = 'https://api.daodaosmart.com:8080/platform'
+
+export const baseURL = 'https://api.daodaosmart.com:8080/platform'
+axios.defaults.baseURL = baseURL
 
 // 请求拦截器
 axios.interceptors.request.use(
   (config: any) => {
-    // 每次发送请求之前判断是否存在token，如果存在，则统一在http请求的header都加上token，不用每次请求都手动添加了
-    // 即使本地存在token，也有可能token是过期的，所以在响应拦截器中要对返回状态进行判断
     const token = localStorage.getItem('token')
     token && (config.headers.token = token)
     if (config.method.toUpperCase() === 'POST') {
@@ -41,7 +41,7 @@ axios.interceptors.response.use(
     if (error.response.status) {
       switch (error.response.status) {
         case 500:
-          ElMessage.error('网错错误，请稍后再试！')
+          // ElMessage.error('网错错误，请稍后再试！')
           break
         case 404:
           ElMessage.error('网错错误，请稍后再试！')
@@ -87,12 +87,20 @@ export function get(url: string, params: any) {
  */
 export function post(url: string, params: any) {
   return new Promise((resolve, reject) => {
+    const res = Object.entries(params).filter(([key, val]) => key !== 'successMessage')
+    const filterParams = Object.fromEntries(res)
     axios
-      .post(url, params)
+      .post(url, filterParams)
       .then((res) => {
         if (res.data.code === 0) {
+          params.successMessage && ElMessage.success(res.data.msg)
           resolve(res.data)
         } else {
+          if (res.data.code === 10001) {
+            ElMessage.error('登录信息失效，请重新登录')
+            router.replace('/login')
+            return
+          }
           ElMessage.error(res.data.msg)
           reject(res.data)
         }

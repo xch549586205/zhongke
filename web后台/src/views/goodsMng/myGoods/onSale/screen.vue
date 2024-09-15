@@ -1,36 +1,42 @@
 <template>
   <div class="screen">
-    <div class="flex" style="width: 70%">
-      <el-input v-model="deviceName" placeholder="输入商品名称搜索" class="input-with-select">
-        <template #append>
-          <el-button
-            @click="_updateScreen('deviceName', deviceName)"
-            style="background: var(--el-color-primary)"
-            :icon="Search"
-          />
-        </template>
-      </el-input>
-      <el-input v-model="siteName" placeholder="输入商品ID搜索" class="input-with-select">
-        <template #append>
-          <el-button
-            @click="_updateScreen('siteName', siteName)"
-            style="background: var(--el-color-primary)"
-            :icon="Search"
-          />
-        </template>
-      </el-input>
-      <el-select v-model="screen.online" placeholder="选择在线状态">
-        <el-option
-          v-for="item in options"
-          :key="item.value + 'online'"
-          :label="item.label"
-          :value="item.value"
+    <el-input
+      v-model="deviceName"
+      placeholder="输入商品名称搜索"
+      class="input-with-select"
+      style="width: 200px"
+    >
+      <template #append>
+        <el-button
+          @click="_updateScreen('deviceName', deviceName)"
+          style="background: var(--el-color-primary)"
+          :icon="Search"
         />
-      </el-select>
-    </div>
-    <div>
-      <el-button type="primary">+发布商品</el-button>
-    </div>
+      </template>
+    </el-input>
+    <el-input
+      v-model="siteName"
+      placeholder="输入商品ID搜索"
+      class="input-with-select"
+      style="width: 200px"
+    >
+      <template #append>
+        <el-button
+          @click="_updateScreen('siteName', siteName)"
+          style="background: var(--el-color-primary)"
+          :icon="Search"
+        />
+      </template>
+    </el-input>
+    <el-select v-model="screen.goodsTypeId" placeholder="选择商品分类" style="width: 200px">
+      <el-option :key="'allGoodsTypeList'" label="全部分类" :value="null" />
+      <el-option
+        v-for="item in goodsTypeList"
+        :key="item.name + 'goodsTypeList'"
+        :label="item.name"
+        :value="item.id"
+      />
+    </el-select>
   </div>
 </template>
 
@@ -38,8 +44,15 @@
 import { Search } from '@element-plus/icons-vue'
 import { watch, ref, onMounted, reactive, computed } from 'vue'
 import { useStore, mapState, mapMutations } from 'vuex'
+const globalDataState = mapState('globalData', ['allAuthorityList', 'goodsTypeList'])
 import moment from 'moment'
 const $store = useStore()
+
+interface GoodsType {
+  name: string
+  id: string
+}
+const goodsTypeList = computed<GoodsType[]>(globalDataState.goodsTypeList.bind({ $store }))
 
 const obj = mapState('goodsMng', ['screen'])
 const screen: any = computed(obj.screen.bind({ $store }))
@@ -56,21 +69,6 @@ onMounted(() => {
   siteName.value = screen.value.siteName
   deviceName.value = screen.value.deviceName
 })
-
-const options = [
-  {
-    value: 0,
-    label: '全部状态'
-  },
-  {
-    value: 1,
-    label: '在线'
-  },
-  {
-    value: 2,
-    label: '离线'
-  }
-]
 </script>
 
 <style lang="less" scoped>

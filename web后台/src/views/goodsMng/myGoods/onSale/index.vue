@@ -1,6 +1,9 @@
 <template>
-  <Screen />
-  <el-table v-loading="loading" :data="goodList" :row-style="{ height: '50px' }">
+  <div style="display: flex">
+    <Screen />
+    <el-button type="primary" @click="goGoodsDetail('')">+发布商品</el-button>
+  </div>
+  <el-table v-loading="loading" :data="goodsList" :row-style="{ height: '50px' }">
     <el-table-column type="index" label="序号" width="80">
       <template #default="scope">
         <div>
@@ -8,50 +11,19 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column prop="name" label="设备名称" />
-    <el-table-column prop="did" label="ID" />
-    <el-table-column prop="site" label="所属站点">
+    <el-table-column prop="name" label="商品名称" />
+    <el-table-column prop="id" label="ID" />
+    <el-table-column prop="goodsTypeId" label="商品类型">
       <template #default="scope">
-        <div v-if="scope.row.sites && scope.row.sites.length">
-          {{ scope.row.sites[0].name }}
-        </div>
+        {{ getGoodsTypeName(scope.row.goodsTypeId) }}
       </template>
     </el-table-column>
 
-    <el-table-column prop="location" label="当前位置（经纬度）" min-width="120">
-      <template #default="scope">
-        <div v-if="scope.row.location">
-          {{ scope.row.location.longitude }},
-          {{ scope.row.location.latitude + ' ' }}
-          <a
-            style="cursor: pointer; margin-left: 5px"
-            @click="currentDevice = { ...scope.row, modalType: 'location' }"
-          >
-            查看地图
-          </a>
-        </div>
-      </template>
-    </el-table-column>
-    <el-table-column prop="online" label="在线状态">
-      <template #default="scope">
-        <div :style="{ color: scope.row.online ? '#333' : '#EB415F' }">
-          {{ scope.row.online ? '在线' : '离线' }}
-        </div>
-      </template>
-    </el-table-column>
-
-    <el-table-column prop="online" label="运行状态">
-      <template #default="scope">
-        <div v-if="scope.row.state" style="color: #333">
-          {{ scope.row.state.pwr && scope.row.state.pwr ? '使用' : '空闲' }}
-        </div>
-        <div v-if="!scope.row.state">空闲</div>
-      </template>
-    </el-table-column>
     <el-table-column prop="description" label="备注" />
     <el-table-column prop="" label="详情">
       <template #default="scope">
-        <a style="cursor: pointer" @click="goDeviceDetail(scope.row.did)">详情</a>
+        <a style="cursor: pointer" @click="goGoodsDetail(scope.row.id)">详情</a>
+        <a style="cursor: pointer" @click="delGoods(scope.row.id, scope.row.name)">删除</a>
       </template>
     </el-table-column>
   </el-table>
@@ -71,23 +43,25 @@
 
 <script setup lang="ts">
 import { reactive, ref, onMounted, watchEffect, computed, watch } from 'vue'
-import { searchGoods } from '@/api/goods.ts'
+import { searchGoodsApi, deleteGoodsApi } from '@/api/goods'
 import moment from 'moment'
 import { useRouter, useRoute } from 'vue-router'
 import Screen from './screen.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import type { Action } from 'element-plus'
 import { useStore, mapState } from 'vuex'
 const $store = useStore()
 const route = useRoute()
 
 const loading = ref(true)
 
-let obj = mapState('deviceMng', ['screen'])
+let obj = mapState('goodsMng', ['screen'])
 let screen: any = computed(obj.screen.bind({ $store }))
 
 watch(
   () => route.query,
   (val: any) => {
-    if (route.path === '/deviceMng/goodList') {
+    if (route.path === '/goodsMng/myGoods/onSale') {
       pagination.currentPage = val.page * 1
     }
   }
@@ -98,7 +72,7 @@ watch(
   (newValue, oldValue) => {
     pagination.currentPage = 1
     router.push({
-      path: '/deviceMng/goodList',
+      path: '/goodsMng/myGoods/onSale',
       query: { page: 1 }
     })
   },
@@ -107,8 +81,8 @@ watch(
 
 const router = useRouter()
 
-const goodList = ref([])
-const currentDevice = ref<any>({})
+const goodsList = ref([])
+const currentGoods = ref<any>({})
 
 interface pagination_type {
   currentPage: number
@@ -122,16 +96,28 @@ const pagination = reactive<pagination_type>({
 })
 
 const handleCurrentChange = (currentPage: any) => {
-  router.push({ path: '/deviceMng/goodList', query: { page: currentPage } })
+  router.push({ path: '/goodsMng/myGoods/onSale', query: { page: currentPage } })
 }
+
 watchEffect(() => {
   pagination.currentPage && _searchGoods()
 })
 
-const goDeviceDetail = (did: string) => {
+const delGoods = (id: string, name: string) => {
+  ElMessageBox.alert(`确定删除商品“${name}”吗？`, '删除商品', {
+    confirmButtonText: '删除',
+    callback: async (action: Action) => {
+      if (action === 'confirm') {
+        const res = await deleteGoodsApi({ id, successMessage: true })
+      }
+    }
+  })
+}
+
+const goGoodsDetail = (id: string) => {
   router.push({
-    path: '/deviceMng/deviceDetail',
-    query: { did, type: 'info', page: 1 }
+    path: '/goodsMng/myGoods/onSale/goodsDetail',
+    query: { id }
   })
 }
 
@@ -139,16 +125,34 @@ onMounted(() => {
   pagination.currentPage = router.currentRoute.value.query.page * 1
 })
 
+interface GoodsType {
+  name: string
+  id: string
+}
+const globalDataState = mapState('globalData', ['goodsTypeList'])
+const goodsTypeList = computed<GoodsType[]>(globalDataState.goodsTypeList.bind({ $store }))
+
+const getGoodsTypeName = (goodsTypeId: string) => {
+  if (!goodsTypeId) {
+    return ''
+  }
+  console.log(goodsTypeId)
+  try {
+    return goodsTypeList.value.filter((goodsType) => goodsType.id == goodsTypeId)[0].name
+  } catch (error) {
+    return ''
+  }
+}
 const closeLocationModal = () => {
-  currentDevice.value = {}
+  currentGoods.value = {}
 }
 async function _searchGoods() {
   loading.value = true
 
   try {
-    const { deviceName, siteName, online } = screen.value
+    const { deviceName, siteName, goodsTypeId } = screen.value
     interface Screen {
-      online?: Boolean
+      goodsTypeId?: number
       deviceName?: string
       siteName?: string
       time?: number
@@ -160,8 +164,8 @@ async function _searchGoods() {
     if (siteName !== '') {
       screenParams.siteName = siteName
     }
-    if (online) {
-      screenParams.online = online * 1 === 1 ? true : false
+    if (goodsTypeId) {
+      screenParams.goodsTypeId = goodsTypeId
       screenParams.time = 300
     }
     const params = {
@@ -169,26 +173,17 @@ async function _searchGoods() {
       pageSize: pagination.pageSize
     }
 
-    const res: any = await searchGoods({
+    const res: any = await searchGoodsApi({
       ...params,
       ...screenParams
     })
     if (!res.data.list) {
-      goodList.value = []
+      goodsList.value = []
       return
     }
     let list = [...res.data.list]
-    list = list.map((dev) => {
-      if (dev.heartBeat && dev.heartBeat.time) {
-        const diffMinutes = moment().diff(moment(dev.heartBeat.time * 1000), 'minutes')
-        return {
-          ...dev,
-          online: diffMinutes < 5 ? true : false
-        }
-      }
-      return { ...dev, online: false }
-    })
-    goodList.value = list
+
+    goodsList.value = list
     pagination.total = res.data.total
   } catch (error) {
     console.error(error)

@@ -11,8 +11,9 @@
             v-for="(item, index) in breadcrumbList"
             :key="index"
             >{{ item.name }}</el-breadcrumb-item
-          > </el-breadcrumb
-        ><RouterView />
+          >
+        </el-breadcrumb>
+        <div class="content_content_content"><RouterView /></div>
       </div>
     </div>
   </div>
@@ -22,11 +23,19 @@
 
 <script lang="ts" setup>
 import MenuBox from '@/components/menu/menu.vue'
-import login from "@/views/login/index.vue";
-
+import login from '@/views/login/index.vue'
 import { routes } from '@/router'
 import { useRouter } from 'vue-router'
 import { onMounted, watch, ref } from 'vue'
+import { useStore, mapState, mapMutations } from 'vuex'
+
+const $store = useStore()
+
+onMounted(() => {
+  $store.dispatch('globalData/getAllAuthorityList')
+  $store.dispatch('globalData/getGoodsTypeList')
+})
+
 interface breadcrumb {
   name: string
   path: string
@@ -87,7 +96,8 @@ watch(
 .content_content_content {
   background: #fff;
   min-height: 80vh;
-  margin: 0 20px;
-  padding: 20px;
+  margin: 0 24px;
+  padding: 24px;
+  border-radius: 20px;
 }
 </style>

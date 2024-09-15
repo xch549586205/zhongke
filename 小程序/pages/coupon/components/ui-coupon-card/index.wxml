@@ -1,12 +1,12 @@
 <wxs module="tools">
 	function isBigValue(value) {
-	var values = (value + '').split('.');
-	if (values[1] && values[0].length >= 3) return true;
-	else return false
+		var values = (value + '').split('.');
+		if (values[1] && values[0].length >= 3) return true;
+		else return false
 	}
 
 	function getBigValues(value) {
-	return value.split('.');
+		return value.split('.');
 	}
 
 	module.exports = { isBigValue: isBigValue, getBigValues: getBigValues };
@@ -47,8 +47,8 @@
 			<slot name="operator" />
 		</view>
 	</view>
-	<view wx:if="{{status === 'useless' || status === 'disabled'}}" class="wr-coupon__seal seal-{{status}}}" />
+
+	<view wx:if="{{status === 'useless' || status === 'disabled'}}" class="wr-coupon__seal seal-{{status}}" />
 	<view wx:if="{{mask}}" class="wr-coupon__mask" />
 	<view wx:if="{{superposable}}" class="wr-coupon__tag">可叠加</view>
 </view>
-
