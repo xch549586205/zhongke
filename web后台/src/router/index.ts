@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-
+import { h, resolveComponent } from 'vue'
 export const routes = [
   {
     path: '/login',
@@ -76,7 +76,22 @@ export const routes = [
       {
         path: '/enableMng/promotion',
         name: '内容推广',
-        component: () => import('../views/enableMng/promotion/index.vue')
+        component: { render: () => h(resolveComponent('router-view')) },
+        children: [
+          {
+            path: '/enableMng/promotion',
+            hide: true,
+            name: '内容推广',
+            component: () => import('../views/enableMng/promotion/index.vue')
+          },
+          {
+            path: '/enableMng/promotion/categoryContent',
+            name: '添加内容',
+            hide: true,
+            query: { categoryId: '' },
+            component: () => import('@/views/enableMng/promotion/categoryContent/index.vue')
+          }
+        ]
       }
     ]
   },

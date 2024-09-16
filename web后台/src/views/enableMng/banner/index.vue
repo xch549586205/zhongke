@@ -31,6 +31,7 @@
             <div v-if="formBox.bannerList[index].url" style="display: flex">
               <img :src="formBox.bannerList[index].url" class="avatar" />
               <div
+                @click.stop="deleteBanner(formBox.bannerList[index].id)"
                 style="
                   margin-left: auto;
                   width: 50px;
@@ -39,7 +40,7 @@
                   justify-content: center;
                 "
               >
-                <el-icon @click.stop="formBox.bannerList[index].url = ''"><Delete /></el-icon>
+                <el-icon><Delete /></el-icon>
               </div>
             </div>
 
@@ -59,29 +60,62 @@ import type { FormRules } from 'element-plus'
 import type { UploadProps, UploadUserFile } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import { Plus, Delete } from '@element-plus/icons-vue'
-import { addBannerApi, getBannerListApi } from '@/api/banner'
+import { addBannerApi, getBannerListApi, updateBannerApi, deleteBannerApi } from '@/api/banner'
 const imageUrl = ref([])
 import { baseURL } from '@/api/http'
 const uploadHeaders = {
   token: localStorage.getItem('token')
 }
 
-onMounted(() => {
-  getBannerListApi({
+onMounted(async () => {
+  getBannerList()
+})
+
+const getBannerList = async () => {
+  const res: any = await getBannerListApi({
     page: 1,
     pageSize: 1000
   })
-})
+  if (res.code === 0) {
+    formBox.bannerList.forEach((banner: Banner, index) => {
+      try {
+        const bannerIndex = res.data.list.findIndex((b: Banner) => b.sort === index)
+        if (index !== -1) {
+          const currentBanner = res.data.list[bannerIndex]
+          formBox.bannerList[index].url = baseURL + '/' + currentBanner.url
+          formBox.bannerList[index].id = currentBanner.id
+          formBox.bannerList[index].sort = currentBanner.sort
+        } else {
+          formBox.bannerList[index] = { url: '', id: null, sort: null }
+        }
+      } catch (error) {
+        formBox.bannerList[index] = { url: '', id: null, sort: null }
+      }
+    })
+  }
+}
 
+const deleteBanner = async (id: number) => {
+  await deleteBannerApi({
+    id
+  })
+  getBannerList()
+}
 const handleAvatarSuccess: UploadProps['onSuccess'] = async (
   response: any,
   uploadFile: any,
   index: number
 ) => {
-  const res: any = await addBannerApi({ url: response.data.url, sort: index })
+  const currentImage = formBox.bannerList[index]
+  const API = currentImage.id ? updateBannerApi : addBannerApi
+
+  const res: any = await API({ url: response.data.url, sort: index })
   if (res.code === 0) {
     formBox.bannerList[index].url = baseURL + '/' + response.data.url
+    formBox.bannerList[index].id = response.data.id
+    formBox.bannerList[index].sort = response.data.sort
   }
+  getBannerList()
 }
 
 const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
@@ -121,6 +155,8 @@ const handlePreview: UploadProps['onPreview'] = (file) => {
 
 interface Banner {
   url: string
+  sort: number | null
+  id: number | null
 }
 
 interface FormBox {
@@ -165,7 +201,6 @@ const router = useRouter()
 }
 .avatar-uploader .el-upload {
   border: 1px dashed var(--el-border-color);
-  border-radius: 6px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
