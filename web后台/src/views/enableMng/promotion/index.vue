@@ -7,7 +7,7 @@
     @deleteCategory="deleteCategory"
   />
 
-  <div class="title" @click="goCategoryContent(0)">
+  <div class="title">
     内容分类管理
     <el-button type="primary" style="margin-left: auto" @click="categoryDialogVisible = true">
       <el-icon style="margin-left: 5px"><Plus /></el-icon>
@@ -27,14 +27,21 @@
           ><EditPen
         /></el-icon>
       </div>
-      <div class="categoryContent">
+      <div class="categoryContentCardWrap">
         <div class="categoryContentCard" @click="goCategoryContent(category.id)">
           <el-icon style="margin-right: 5px"><Plus /></el-icon> 添加内容
+        </div>
+        <div
+          v-for="categoryContent in getCategoryContentListByCategoryId(category.id)"
+          :key="categoryContent.id + 'categoryContent'"
+          class="categoryContentCard"
+        >
+          {{ getCategoryContentBannerImage(categoryContent.categoryBanner) }}
+          {{ categoryContent.name }}
         </div>
       </div>
     </div>
   </div>
-
 </template>
 
 <script lang="ts" setup>
@@ -53,7 +60,8 @@ import {
   deleteCategoryApi,
   updateCategoryApi,
   getCategoryApi,
-  getCategoryListApi
+  getCategoryListApi,
+  getCategoryContentListApi
 } from '@/api/promotion'
 
 const categoryDialogVisible = ref(false)
@@ -61,6 +69,18 @@ interface Category {
   id?: number
   name?: string
   sort?: number
+}
+interface CategoryContent {
+  id?: number
+  name?: string
+  sort?: number
+  categoryId?: number
+  categoryBanner: Array<Image>
+}
+interface Image {
+  url: string
+  name: string
+  id?: string
 }
 const categoryDialogInfo = ref<Category>({})
 
@@ -78,14 +98,30 @@ watch(
 )
 
 const categoryList = ref<Category[]>([])
-onMounted(() => {
-  getCategoryList()
+const categoryContentList = ref<CategoryContent[]>([])
+onMounted(async () => {
+  await getCategoryList()
+  getCategoryContentList()
 })
 const getCategoryList = async () => {
   const res: any = await getCategoryListApi({ page: 1, pageSize: 1000 })
   if (res.code === 0) {
     categoryList.value = res.data.list
   }
+}
+const getCategoryContentList = async () => {
+  const res: any = await getCategoryContentListApi({ page: 1, pageSize: 1000 })
+  if (res.code === 0) {
+    categoryContentList.value = res.data.list
+  }
+}
+
+const getCategoryContentBannerImage = (categoryBanner: Array<Image>) => {
+  return categoryBanner[0].url
+}
+
+const getCategoryContentListByCategoryId = (categoryId?: number) => {
+  return categoryContentList.value.filter((c: CategoryContent) => c.categoryId === categoryId)
 }
 
 const addOrUpdateCategory = async (params: Category) => {
@@ -136,16 +172,22 @@ const router = useRouter()
   letter-spacing: 0;
 }
 .categoryContent {
-  margin-top: 10px;
-  .categoryContentCard {
+  margin-top: 20px;
+  .categoryContentCardWrap {
+    margin-top: 10px;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 280px;
-    height: 208px;
-    background: #ffffff;
-    border: 1.04px solid #e9e9e9;
-    border-radius: 4px;
+    flex-wrap: wrap;
+    .categoryContentCard {
+      display: flex;
+      align-items: center;
+      margin-right: 40px;
+      justify-content: center;
+      width: 280px;
+      height: 208px;
+      background: #ffffff;
+      border: 1.04px solid #e9e9e9;
+      border-radius: 4px;
+    }
   }
 }
 </style>

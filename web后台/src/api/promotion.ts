@@ -5,3 +5,5 @@ export const deleteCategoryApi = (params: any) => post('/small/deleteCategory', 
 export const updateCategoryApi = (params: any) => post('/small/updateCategory', params)
 export const getCategoryApi = (params: any) => post('/small/getCategory', params)
 export const getCategoryListApi = (params: any) => post('/small/getCategoryList', params)
+export const addCategoryContentApi = (params: any) => post('/small/addCategoryContent', params)
+export const getCategoryContentListApi = (params: any) => post('/small/getCategoryContentList', params)
