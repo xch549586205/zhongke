@@ -11,7 +11,7 @@
     <el-form-item label="上传图片" prop="bannerList">
       <div style="display: flex; flex-direction: column">
         <div class="imgDes">
-          图片要求：尺寸为 176*686px 的横向图片，至多可上传5张，手机端将按图片顺序
+          图片要求：尺寸为 343*128px 的横向图片，至多可上传5张，手机端将按图片顺序
         </div>
         <div style="display: flex; flex-direction: column">
           <el-upload
@@ -124,12 +124,12 @@ const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
     return false
   }
   const isSize = new Promise(function (resolve, reject) {
-    let width = 686
-    let height = 176
+    let width = 343
+    let height = 128
     let _URL = window.URL || window.webkitURL
     let img = new Image()
     img.onload = function () {
-      let valid = img.width == width && img.height == height
+      let valid = img.width % width === 0 && img.height % height === 0
       valid ? resolve('success') : reject()
     }
     img.src = _URL.createObjectURL(rawFile)
@@ -138,7 +138,7 @@ const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
       return rawFile
     },
     () => {
-      ElMessage.error('图片尺寸只能是176*686，请您重新选择!!')
+      ElMessage.error('图片比例只能是343*128，请您重新选择!!')
       Promise.reject()
       return false //必须加上return false; 才能阻止
     }
@@ -215,8 +215,8 @@ const router = useRouter()
 .avatar {
   font-size: 28px;
   color: #8c939d;
-  width: 686px;
-  height: 176px;
+  width: 343px;
+  height: 128px;
   text-align: center;
 }
 </style>

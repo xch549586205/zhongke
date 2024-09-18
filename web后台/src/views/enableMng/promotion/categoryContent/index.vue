@@ -14,7 +14,7 @@
         placeholder="最多可输入10个汉字（20字符）"
       />
     </el-form-item>
-    <el-form-item label="上传图片" prop="categoryBanner">
+    <el-form-item label="内容封面" prop="categoryBanner">
       <div style="display: flex; flex-direction: column">
         <div class="imgDes">图片要求：尺寸为 680*256x 的横向图片</div>
         <div style="display: flex; flex-direction: column">
@@ -22,6 +22,7 @@
             v-model:file-list="form.categoryBanner"
             :action="baseURL + '/file/uploadFile'"
             :headers="uploadHeaders"
+            :before-upload="categoryBannerBeforeUpload"
             list-type="picture-card"
             :on-preview="handlePictureCardPreview"
           >
@@ -30,7 +31,7 @@
         </div>
       </div>
     </el-form-item>
-    <el-form-item label="上传图片" prop="detailBanner">
+    <el-form-item label="详情描述" prop="detailBanner">
       <div style="display: flex; flex-direction: column">
         <div class="imgDes">图片要求：上传张数不限制，比例不限制，手机端将按图片顺序展示</div>
         <div style="display: flex; flex-direction: column">
@@ -63,13 +64,11 @@ import { CircleClose, Plus, Delete, EditPen } from '@element-plus/icons-vue'
 import { addBannerApi, getBannerListApi, updateBannerApi, deleteBannerApi } from '@/api/banner'
 import { baseURL } from '@/api/http'
 import type { FormInstance, FormRules } from 'element-plus'
+import moment from 'moment'
 import {
-  addCategoryApi,
-  deleteCategoryApi,
-  updateCategoryApi,
-  getCategoryApi,
-  getCategoryListApi,
-  addCategoryContentApi
+  addCategoryContentApi,
+  getCategoryContentApi,
+  updateCategoryContentApi
 } from '@/api/promotion'
 
 const formRef = ref<FormInstance>()
@@ -99,6 +98,23 @@ const form: Form = reactive({
   categoryBanner: [],
   detailBanner: []
 })
+
+onMounted(async () => {
+  if (route.query.categoryContentId) {
+    const res: any = await getCategoryContentApi({ id: route.query.categoryContentId * 1 })
+    const { name, categoryBanner, detailBanner } = res.data.goods
+    form.name = name
+    form.categoryBanner = categoryBanner.map((b: Image) => ({
+      ...b,
+      url: baseURL + '/' + b.url
+    }))
+    form.detailBanner = detailBanner.map((b: Image) => ({
+      ...b,
+      url: baseURL + '/' + b.url
+    }))
+  }
+})
+
 watch(
   () => form,
   (formBox4: any) => {
@@ -108,6 +124,33 @@ watch(
   },
   { deep: true }
 )
+const categoryBannerBeforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
+  if (['image/jpeg', 'image/png', 'image/webp'].indexOf(rawFile.type) === -1) {
+    ElMessage.error('请上传正确的图片格式!')
+    return false
+  }
+  const isSize = new Promise(function (resolve, reject) {
+    let width = 680
+    let height = 256
+    let _URL = window.URL || window.webkitURL
+    let img = new Image()
+    img.onload = function () {
+      let valid = img.width % width === 0 && img.height % height === 0
+      valid ? resolve('success') : reject()
+    }
+    img.src = _URL.createObjectURL(rawFile)
+  }).then(
+    () => {
+      return rawFile
+    },
+    () => {
+      ElMessage.error('图片尺寸只能是680*256，请您重新选择!!')
+      Promise.reject()
+      return false //必须加上return false; 才能阻止
+    }
+  )
+  return isSize
+}
 const formRules = reactive<FormRules<Form>>({
   name: [{ required: true, message: '请输入内容名称', trigger: 'blur' }],
   categoryBanner: [{ required: true, message: '请上传', trigger: 'blur' }],
@@ -123,7 +166,8 @@ const save = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid, fields) => {
     if (valid) {
-      const res: any = await addCategoryContentApi({
+      const API = route.query.categoryContentId ? updateCategoryContentApi : addCategoryContentApi
+      const params: any = {
         ...form,
         categoryBanner: form.categoryBanner.map((banner: any, index: number) => ({
           url: banner.response ? banner.response.data.url : banner.url.replace(baseURL + '/', ''),
@@ -140,7 +184,13 @@ const save = async (formEl: FormInstance | undefined) => {
         sort: 1,
         categoryId: route.query.categoryId * 1,
         successMessage: true
-      })
+      }
+      if (route.query.categoryContentId) {
+        params.id = route.query.categoryContentId * 1
+      } else {
+        params.time = moment().format('YYYY-MM-DD HH:mm:ss')
+      }
+      const res: any = await API({ ...params })
       if (res.code === 0) {
         router.back()
       }

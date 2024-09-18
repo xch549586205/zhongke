@@ -1,7 +1,7 @@
 import { post } from './http.js'
 
 export const addGoodsApi = (params: any) => post('/goods/addGoods', params)
-export const searchGoodsApi = (params: any) => post('/goods/getGoodsSkuList', params)
+export const searchGoodsApi = (params: any) => post('/goods/searchGoods', params)
 export const deleteGoodsApi = (params: any) => post('/goods/deleteGoods', params)
 
 //商品标签
