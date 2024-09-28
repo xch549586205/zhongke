@@ -12,3 +12,6 @@ export const deleteGoodsTagApi = (params: any) => post('/goods/deleteGoodsTag', 
 
 export const getGoodsByIdApi = (params: any) => post('/goods/getGoodsById', params)
 export const updateGoodsApi = (params: any) => post('/goods/updateGoods', params)
+export const updateGoodsStateApi = (params: any) => post('/goods/updateGoodsState', params)
+export const getGoodsNumApi = (params: any) => post('/goods/getGoodsNum', params)
+export const copyGoodsApi = (params: any) => post('/goods/copyGoods', params)

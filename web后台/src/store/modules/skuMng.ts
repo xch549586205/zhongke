@@ -34,22 +34,6 @@ export default {
       state.goodsTagList = payload.goodsTagList
     }
   },
-  actions: {
-    async getAllGoodsTagList({ commit }) {
-      try {
-        const res: any = await getGoodsTagListApi({
-          page: 1,
-          pageSize: 999999
-        })
-        if (!res.data.list) {
-          return []
-        }
-        const goodsTagList: Array<GoodsTag> = [...res.data.list]
-        commit('updateAllGoodsTagList', { goodsTagList })
-      } catch (error) {
-        console.error(error)
-      }
-    }
-  },
+  actions: {},
   getters: {}
 }

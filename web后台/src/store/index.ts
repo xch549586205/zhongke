@@ -1,4 +1,6 @@
+import goodsClassificationMng from './modules/goodsClassification'
 import goodsMng from './modules/goodsMng'
+import skuMng from './modules/skuMng'
 import siteMng from './modules/siteMng'
 import taskMng from './modules/taskMng'
 import userMng from './modules/userMng'
@@ -13,7 +15,9 @@ const store = createStore({
     siteMng,
     taskMng,
     userMng,
-    globalData
+    globalData,
+    goodsClassificationMng,
+    skuMng
   }
 })
 export default store

@@ -13,17 +13,14 @@
     </view>
   </view>
   <view>
-    <image mode="widthFix" src="./images/1.jpg" class="demopng" style="margin: 16rpx 0;" />
-    <image mode="widthFix" src="./images/2.jpg" class="demopng" />
+    <image mode="widthFix" wx:for="{{ bannerList }}" wx:key="index" wx:for-item="banner" src="{{banner.url}}" class="demopng" style="margin: 16rpx 0;" data-index="{{index}}" />
     <image mode="widthFix" src="./images/3.jpg" class="demopng" />
-    <view class="text1">— ZKHOME 米家产品 —</view>
-    <image mode="widthFix" src="./images/4.jpg" style="margin-bottom: 16rpx;" class="demopng" />
-    <image mode="widthFix" src="./images/5.jpg" style="margin-bottom: 16rpx;" class="demopng" />
-    <image mode="widthFix" src="./images/6.jpg" style="margin-bottom: 16rpx;" class="demopng" />
-    <image mode="widthFix" src="./images/7.jpg" class="demopng" />
-    <view class="text1">— AI 空调节能 —</view>
-    <image mode="widthFix" src="./images/8.jpg" style="margin-bottom: 16rpx;" class="demopng" />
-    <image mode="widthFix" src="./images/9.jpg" style="margin-bottom: 52rpx;" class="demopng" />
+    <view wx:for="{{procect}}" wx:key="index" wx:for-item="procectItem">
+      <view class="text1">— {{procectItem.categoryName}} —</view>
+      <view wx:for="{{procectItem.categoryContentList}}" wx:key="id" wx:for-item="categoryContent">
+        <image data-id="{{categoryContent.id}}" mode="widthFix" bind:tap="goCategoryContent" src="{{categoryContent.categoryBanner[0].url}}" style="margin-bottom: 16rpx;" class="demopng" />
+      </view>
+    </view>
   </view>
   <!-- <view class="swiper-wrap">
     <t-swiper wx:if="{{imgSrcs.length > 0}}" current="{{current}}" autoplay="{{autoplay}}" duration="{{duration}}" interval="{{interval}}" navigation="{{navigation}}" imageProps="{{swiperImageProps}}" list="{{imgSrcs}}" bind:click="navToActivityDetail" />

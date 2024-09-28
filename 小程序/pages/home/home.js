@@ -2,6 +2,9 @@ import {
   fetchHome
 } from '../../services/home/home';
 import {
+  baseUrl
+} from "../../services/http"
+import {
   fetchGoodsList
 } from '../../services/good/fetchGoods';
 import {
@@ -11,9 +14,17 @@ import Toast from 'tdesign-miniprogram/toast/index';
 import {
   behavior
 } from "miniprogram-computed"
+import {
+  getBannerListApi,
+  getCategoryContentListApi,
+  getCategoryListApi
+} from "../../services/home.js"
 Page({
   behaviors: [behavior],
   data: {
+    categoryList: [],
+    categoryContentList: [],
+    bannerList: [],
     imgSrcs: [],
     tabList: [],
     goodsList: [],
@@ -75,12 +86,95 @@ Page({
       );
       console.log(distance ? (distance / 1000).toFixed(1) + "km" : "")
       return distance ? (distance / 1000).toFixed(1) + "Km" : ""
+    },
+    procect(data) {
+      const {
+        categoryList,
+        categoryContentList
+      } = data
+      if (!categoryList || !categoryList.length) {
+        return []
+      }
+      let list = []
+      categoryList.map(category => {
+        list.push({
+          categoryName: category.name,
+          categoryContentList: categoryContentList.filter((categoryContent => categoryContent.categoryId === category.id))
+        })
+      })
+      console.log(list)
+      return list
     }
   },
-  init() {
+  async init() {
     this.loadHomePage();
     this.getLocation();
+    this.getBannerList()
+    await this.getCategoryList();
+    this.getCategoryContentList()
   },
+  async getBannerList() {
+    try {
+      const res = await getBannerListApi({
+        page: 1,
+        pageSize: 1000
+      })
+      this.setData({
+        bannerList: res.list.map(banner => ({
+          ...banner,
+          url: baseUrl + '/' + banner.url
+        })) || []
+      })
+    } catch (error) {
+      console.error(error)
+      this.setData({
+        bannerList: []
+      })
+    }
+  },
+  async getCategoryList() {
+    try {
+      const res = await getCategoryListApi({
+        page: 1,
+        pageSize: 1000
+      })
+      this.setData({
+        categoryList: res.list
+      })
+    } catch (error) {
+      console.error(error)
+      this.setData({
+        categoryList: []
+      })
+    }
+  },
+  async getCategoryContentList() {
+    try {
+      const res = await getCategoryContentListApi({
+        page: 1,
+        pageSize: 1000
+      })
+      this.setData({
+        categoryContentList: res.list.map(categoryContent => ({
+          ...categoryContent,
+          categoryBanner: categoryContent.categoryBanner.map(b => ({
+            ...b,
+            url: baseUrl + '/' + b.url
+          })),
+          detailBanner: categoryContent.categoryBanner.map(d => ({
+            ...d,
+            url: baseUrl + '/' + d.url
+          }))
+        })) || []
+      })
+    } catch (error) {
+      console.error(error)
+      this.setData({
+        categoryContentList: []
+      })
+    }
+  },
+
   async getLocation() {
     const that = this;
     if (this.data.location.latitude) {
@@ -194,6 +288,14 @@ Page({
   navToSearchPage() {
     wx.navigateTo({
       url: '/pages/goods/search/index'
+    });
+  },
+  goCategoryContent(e) {
+    const {
+      id
+    } = e.currentTarget.dataset
+    wx.navigateTo({
+      url: '/pages/home/categoryContent/categoryContent?id=' + id
     });
   },
 

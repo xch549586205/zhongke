@@ -45,6 +45,14 @@
           v-model="formBox2.name"
         />
       </el-form-item>
+      <el-form-item label="品牌名称" prop="brandName">
+        <el-input
+          maxlength="60"
+          placeholder="最多可输入30个汉字（60字符）"
+          show-word-limit
+          v-model="formBox2.brandName"
+        />
+      </el-form-item>
       <el-form-item label="商品描述" prop="description">
         <el-input
           maxlength="60"
@@ -123,7 +131,7 @@
           </el-table-column>
           <el-table-column prop="kuCun" label="库存">
             <template #default="scope">
-              <el-input type="number" v-model="formBox3.goodsSku[scope.$index].kuCun" />
+              <el-input type="number" v-model.number="formBox3.goodsSku[scope.$index].kuCun" />
             </template>
           </el-table-column>
           <el-table-column prop="kuCun" label="" align="center">
@@ -180,7 +188,7 @@
   </div>
   <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 30px">
     <el-button type="primary" @click="addGoods">发布商品</el-button>
-    <el-button v-if="!id" @click="saveLocal">存草稿 </el-button>
+    <!-- <el-button v-if="!id" @click="saveLocal">存草稿 </el-button> -->
     <el-button @click="goBack">取消</el-button>
   </div>
 </template>
@@ -224,6 +232,7 @@ const getGoodsInfo = async () => {
       goodsPara,
       goodsSku,
       description,
+      brandName,
       goodsTags,
       goodsTypeId,
       name
@@ -231,6 +240,7 @@ const getGoodsInfo = async () => {
     formBox1.goodsTypeId = goodsTypeId
     formBox2.name = name
     formBox2.description = description
+    formBox2.brandName = brandName
     formBox2.goodsTags = goodsTags.map((tag: GoodsTag) => tag.id)
     formBox2.goodsPara = goodsPara
     formBox3.goodsSku = goodsSku
@@ -270,18 +280,21 @@ interface GoodsPara {
 interface FormBox2 {
   name: string
   description: string
+  brandName: string
   goodsTags: Array<number>
   goodsPara: Array<GoodsPara>
 }
 const formBox2 = reactive<FormBox2>({
   name: '',
   description: '',
+  brandName: '',
   goodsTags: [],
   goodsPara: []
 })
 const formBox2Rules = reactive<FormRules<FormBox2>>({
   name: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
-  description: [{ required: true, message: '请输入商品描述', trigger: 'blur' }]
+  description: [{ required: true, message: '请输入商品描述', trigger: 'blur' }],
+  brandName: [{ required: true, message: '请输入品牌名称', trigger: 'blur' }]
 })
 //  FormBox2 end
 
@@ -484,7 +497,11 @@ const addGoods = async () => {
         const currentTagIndex = goodsTagList.value.findIndex((tag) => tag.id === tagId)
         const currentTag = goodsTagList.value[currentTagIndex]
         return currentTag
-      })
+      }),
+      goodsSku: params.goodsSku.map((sku: GoodsSku) => ({
+        ...sku,
+        goodsName: formBox2.name
+      }))
     })
     if (res.code === 0) {
       !id.value && storage.removeItem('goodsPara')

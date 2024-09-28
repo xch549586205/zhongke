@@ -2,7 +2,7 @@
   <el-dialog
     v-model="addTagDialogVisible"
     title="添加标签"
-    width="20%"
+    width="30%"
     :z-index="20"
     destroy-on-close
   >

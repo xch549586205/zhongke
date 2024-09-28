@@ -47,7 +47,7 @@
     "condition": false
   },
   "compileType": "miniprogram",
-  "libVersion": "2.23.1",
+  "libVersion": "3.6.0",
   "appid": "wx5f38e1a4185e261f",
   "projectname": "tdesign-miniprogram-starter-retail",
   "simulatorType": "wechat",
@@ -63,7 +63,7 @@
         },
         {
           "name": "示例页-商品分类",
-          "pathName": "pages/goods/category/index",
+          "pathName": "pages/category/category/category",
           "query": "",
           "scene": null
         },

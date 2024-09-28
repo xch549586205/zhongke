@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/home/home",
+    "pages/category/category/category",
     "pages/usercenter/index",
     "pages/usercenter/person-info/index",
     "pages/usercenter/address/list/index",
@@ -28,7 +29,9 @@
     "pages/order/fill-tracking-no/index",
     "pages/order/delivery-detail/index",
     "pages/order/invoice/index",
-    "pages/usercenter/name-edit/index"
+    "pages/usercenter/name-edit/index",
+    "pages/home/categoryContent/categoryContent",
+    "pages/category/goodsDetail/goodsDetail"
   ],
   "tabBar": {
     "custom": true,
@@ -42,12 +45,12 @@
         "text": "首页"
       },
       {
-        "pagePath": "pages/goods/category/index",
-        "text": "分类"
-      },
-      {
         "pagePath": "pages/cart/index",
         "text": "购物车"
+      },
+      {
+        "pagePath": "pages/category/category/category",
+        "text": "分类"
       },
       {
         "pagePath": "pages/usercenter/index",

@@ -1,0 +1,48 @@
+<view class="goods-detail-page">
+  <view class="goods-head">
+    <t-swiper wx:if="{{goodsBanners.length > 0}}" height="750rpx" current="{{current}}" autoplay="{{false}}" duration="{{500}}" interval="{{5000}}" navigation="{{navigation}}" list="{{goodsBanners}}" />
+    <view class="goods-info">
+      <view class="goods-number">
+        <view class="goods-price">
+          <price wr-class="class-goods-price" symbol-class="class-goods-symbol" price="{{minSalePrice}}" type="lighter" />
+          <view class="goods-price-up">起</view>
+        </view>
+        <!-- <view class="sold-num">已售{{soldNum}}</view> -->
+      </view>
+      <view class="goods-title">
+        <view class="goods-name">{{goodsInfo.name}}</view>
+        <view class="goods-tag">
+          <t-button open-type="share" t-class="shareBtn" variant="text">
+            <view class="btn-icon">
+              <t-icon name="share" size="40rpx" color="#000" />
+              <view class="share-text">分享</view>
+            </view>
+          </t-button>
+        </view>
+      </view>
+      <view class="goods-intro">{{goodsInfo.description}}</view>
+
+    </view>
+    <view class="spu-select" bindtap="showSkuSelectPopup">
+      <view class="label">已选</view>
+      <view class="content">
+        <view class="{{!goodsInfo.description ? 'tintColor' : ''}}">
+          请选择
+        </view>
+        <t-icon name="chevron-right" size="40rpx" color="#BBBBBB" />
+      </view>
+    </view>
+    <view class="spu-select" bindtap="showSkuSelectPopup">
+      <view class="label">已选</view>
+      <view class="content">
+        <view class="{{!selectedSku ? 'tintColor' : ''}}">
+          {{selectedSku ? currentSku.specName : '请选择'}}
+        </view>
+        <t-icon name="chevron-right" size="40rpx" color="#BBBBBB" />
+      </view>
+    </view>
+    <goods-specs-popup id="goodsSpecsPopup" wx:if="{{isSpuSelectPopupShow}}" selectedSku="{{selectedSku}}" show="{{isSpuSelectPopupShow}}" goodsInfo='{{goodsInfo}}' title="{{goodsInfo.name || ''}}" src="{{goodsBanners[0]}}" goodsSku="{{goodsInfo.goodsSku || []}}" bind:closeSpecsPopup="handlePopupHide" bind:skuConfirm='skuConfirm' bind:change="chooseSpecItem" bind:changeNum="changeNum" bind:addCart="addCart" bind:buyNow="gotoBuy" bind:specsConfirm="specsConfirm" isStock="{{false}}" outOperateStatus="{{outOperateStatus}}">
+    </goods-specs-popup>
+  </view>
+
+</view>

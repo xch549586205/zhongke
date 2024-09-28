@@ -1,17 +1,14 @@
 <template>
   <div class="screen">
-    <el-input v-model="deviceName" placeholder="输入分类名称搜索" class="input-with-select">
+    <el-input v-model="name" placeholder="输入分类名称搜索" class="input-with-select">
       <template #append>
         <el-button
-          @click="_updateScreen('deviceName', deviceName)"
+          @click="_updateScreen('name', name)"
           style="background: var(--el-color-primary)"
           :icon="Search"
         />
       </template>
     </el-input>
-    <el-button>重置</el-button>
-
-    <el-button type="primary">查询</el-button>
   </div>
 </template>
 
@@ -22,20 +19,18 @@ import { useStore, mapState, mapMutations } from 'vuex'
 import moment from 'moment'
 const $store = useStore()
 
-const obj = mapState('goodsMng', ['screen'])
+const obj = mapState('goodsClassificationMng', ['screen'])
 const screen: any = computed(obj.screen.bind({ $store }))
 
-const { updateScreen } = mapMutations('goodsMng', ['updateScreen'])
+const { updateScreen } = mapMutations('goodsClassificationMng', ['updateScreen'])
 
 function _updateScreen(key: string, value: string) {
   updateScreen.bind({ $store })({ key, value })
 }
 
-const deviceName = ref('')
-const siteName = ref('')
+const name = ref('')
 onMounted(() => {
-  siteName.value = screen.value.siteName
-  deviceName.value = screen.value.deviceName
+  name.value = screen.value.name
 })
 </script>
 

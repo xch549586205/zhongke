@@ -16,7 +16,7 @@
     </el-form-item>
     <el-form-item label="内容封面" prop="categoryBanner">
       <div style="display: flex; flex-direction: column">
-        <div class="imgDes">图片要求：尺寸为 680*256x 的横向图片</div>
+        <div class="imgDes">图片要求：尺寸为 686*256x 的横向图片</div>
         <div style="display: flex; flex-direction: column">
           <el-upload
             v-model:file-list="form.categoryBanner"
@@ -24,6 +24,7 @@
             :headers="uploadHeaders"
             :before-upload="categoryBannerBeforeUpload"
             list-type="picture-card"
+            :limit="1"
             :on-preview="handlePictureCardPreview"
           >
             <el-icon><Plus /></el-icon>
@@ -130,11 +131,12 @@ const categoryBannerBeforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
     return false
   }
   const isSize = new Promise(function (resolve, reject) {
-    let width = 680
-    let height = 256
+    let width = 343
+    let height = 128
     let _URL = window.URL || window.webkitURL
     let img = new Image()
     img.onload = function () {
+      debugger
       let valid = img.width % width === 0 && img.height % height === 0
       valid ? resolve('success') : reject()
     }
@@ -144,7 +146,7 @@ const categoryBannerBeforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
       return rawFile
     },
     () => {
-      ElMessage.error('图片尺寸只能是680*256，请您重新选择!!')
+      ElMessage.error('图片尺寸只能是686*256，请您重新选择!!')
       Promise.reject()
       return false //必须加上return false; 才能阻止
     }

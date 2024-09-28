@@ -1,0 +1,2 @@
+<!--pages/home/categoryContent/categoryContent.wxml-->
+<t-image lazy="{{true}}" mode="widthFix" wx:for="{{ detailBannerList }}" wx:key="index" wx:for-item="banner" src="{{banner}}" class="demopng" style="margin: 16rpx 0;" data-index="{{index}}" />

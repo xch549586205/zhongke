@@ -1,0 +1,4 @@
+/* pages/home/categoryContent/categoryContent.wxss */
+.demopng {
+  width: 100%;
+}

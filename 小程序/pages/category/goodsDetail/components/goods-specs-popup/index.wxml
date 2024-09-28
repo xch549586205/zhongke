@@ -1,0 +1,38 @@
+<t-popup visible="{{show}}" placement="bottom" bind:visible-change="handlePopupHide">
+  <view class="popup-container">
+    <view class="popup-close" bindtap="handlePopupHide">
+      <t-icon name="close" size="36rpx" />
+    </view>
+    <view class="popup-sku-header">
+      <t-image t-class="popup-sku-header__img" src="{{src}}" />
+      <view class="popup-sku-header__goods-info">
+        <view class="popup-sku__goods-name">{{title}}</view>
+        <view class="goods-price-container">
+          <view class="popup-sku__price">
+            <price wx:if="{{selectedSku}}" price="{{currentSkuPrice }}" wr-class="popup-sku__price-num" symbol-class="popup-sku__price-symbol" />
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="popup-sku-body">
+      <view class="popup-sku-group-container">
+        <view class="popup-sku-row">
+          <view wx:for="{{goodsSku}}" wx:key="id" class="popup-sku-row__item {{selectedSku===item.id ? 'popup-sku-row__item--active' : ''}} " data-id="{{ item.id}}" data-val="{{valuesItem.specValue}}" bindtap="chooseSpec">
+            {{item.specName}}
+          </view>
+        </view>
+      </view>
+      <view class="popup-sku-stepper-stock">
+        <view class="popup-sku-stepper-container">
+          <view class="popup-sku__stepper-title">
+            购买数量
+          </view>
+          <t-stepper disabled="{{!selectedSku}}" value="{{buyNum}}" min="{{1}}" max="{{selectedSkuInfo.kuCun}}" theme="filled" bind:change="handleBuyNumChange" />
+        </view>
+      </view>
+      <view class="single-confirm-btn {{!selectedSku||!buyNum ? 'disabled' : ''}}" bindtap="skuConfirm">
+        确定
+      </view>
+    </view>
+  </view>
+</t-popup>

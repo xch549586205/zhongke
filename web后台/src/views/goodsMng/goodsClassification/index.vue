@@ -47,9 +47,9 @@ const route = useRoute()
 const loading = ref(true)
 const addDialogVisible = ref(false)
 
-let obj = mapState('deviceMng', ['screen'])
+let obj = mapState('goodsClassificationMng', ['screen'])
 let screen: any = computed(obj.screen.bind({ $store }))
-
+console.log(screen)
 watch(
   () => route.query,
   (val: any) => {
@@ -88,18 +88,11 @@ const pagination = reactive<pagination_type>({
 })
 
 const handleCurrentChange = (currentPage: any) => {
-  router.push({ path: '/deviceMng/goodsTypeList', query: { page: currentPage } })
+  router.push({ path: '/goodsMng/goodsClassification', query: { page: currentPage } })
 }
 watchEffect(() => {
   pagination.currentPage && getGoodsTypeList()
 })
-
-const goDeviceDetail = (did: string) => {
-  router.push({
-    path: '/deviceMng/deviceDetail',
-    query: { did, type: 'info', page: 1 }
-  })
-}
 
 onMounted(() => {
   pagination.currentPage = router.currentRoute.value.query.page * 1
@@ -123,10 +116,15 @@ const addGoodsType = async (form: object) => {
 
 async function getGoodsTypeList() {
   loading.value = true
+  const { name } = screen.value
+
   try {
     const params = {
       page: pagination.currentPage,
       pageSize: pagination.pageSize
+    }
+    if (name !== '') {
+      params.name = name
     }
     const res: any = await getGoodsTypeListApi({
       ...params

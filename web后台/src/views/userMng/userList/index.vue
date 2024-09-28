@@ -51,8 +51,8 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="昵称" prop="nickName">
-        <el-input v-model="ruleForm.nickName" />
+      <el-form-item label="手机号" prop="phoneNumber">
+        <el-input v-model="ruleForm.phoneNumber" />
       </el-form-item>
       <el-form-item label="用户名" prop="userName">
         <el-input v-model="ruleForm.userName" :disabled="Boolean(isEdit)" />
@@ -91,7 +91,7 @@
       </template>
     </el-table-column>
     <el-table-column prop="userName" label="用户名" />
-    <el-table-column prop="nickName" label="昵称" />
+    <el-table-column prop="phoneNumber" label="手机号" />
     <el-table-column prop="authorityId" label="角色">
       <template #default="scope">
         <div>
@@ -187,17 +187,17 @@ const pagination = reactive<pagination_type>({
 })
 interface RuleForm {
   authorityId: string
-  nickName: string
   passWord: any
   userName: string
   newPassword?: string
+  phoneNumber: string
 }
 const ruleFormRef = ref<FormInstance>()
 const ruleForm = reactive<RuleForm>({
   authorityId: '',
   passWord: '',
-  nickName: '',
-  userName: ''
+  userName: '',
+  phoneNumber: ''
 })
 const isEdit = computed(() => {
   return Boolean(addOrEditUserDialogVisible.value.userInfo.id)
@@ -224,11 +224,11 @@ const rules = reactive<FormRules>({
       message: '请输入新密码'
     }
   ],
-  nickName: [
+  phoneNumber: [
     {
       required: true,
       trigger: 'change',
-      message: '请输入昵称'
+      message: '请输入手机号'
     }
   ],
   userName: [
@@ -309,7 +309,7 @@ const edit = (userInfo) => {
   addOrEditUserDialogVisible.value.show = true
   addOrEditUserDialogVisible.value.userInfo = userInfo
   ruleForm.authorityId = userInfo.authorityId
-  ruleForm.nickName = userInfo.nickName
+  ruleForm.phoneNumber = userInfo.phoneNumber
   ruleForm.userName = userInfo.userName
 }
 
@@ -317,7 +317,7 @@ const _changePassword = (userInfo) => {
   changePasswordDialogVisible.value.show = true
   changePasswordDialogVisible.value.userInfo = userInfo
   ruleForm.authorityId = userInfo.authorityId
-  ruleForm.nickName = userInfo.nickName
+  ruleForm.phoneNumber = userInfo.phoneNumber
   ruleForm.userName = userInfo.userName
 }
 
@@ -349,9 +349,9 @@ const addOrEditUser = async (formEl: FormInstance | undefined) => {
     if (valid) {
       try {
         const API = isEdit.value ? editUser : addUser
-        const { authorityId, passWord, nickName, userName } = ruleForm
+        const { authorityId, passWord, phoneNumber, userName } = ruleForm
         const params: any = {
-          nickName,
+          phoneNumber,
           userName
         }
         // 添加用户
@@ -386,7 +386,7 @@ const handleCurrentChange = (currentPage: any) => {
 function clear() {
   ruleForm.authorityId = ''
   ruleForm.passWord = ''
-  ruleForm.nickName = ''
+  ruleForm.phoneNumber = ''
   ruleForm.userName = ''
 }
 

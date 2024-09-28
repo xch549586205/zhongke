@@ -1,6 +1,6 @@
 <template>
   <div style="display: flex">
-    <Screen />
+    <Screen :key="screenKey" />
     <el-button type="primary" @click="goGoodsDetail('')">+发布商品</el-button>
   </div>
   <el-table v-loading="loading" :data="goodsList" :row-style="{ height: '50px' }">
@@ -11,8 +11,20 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column prop="name" label="商品名称" />
-    <el-table-column prop="id" label="ID" />
+    <el-table-column prop="name" label="商品信息">
+      <template #default="scope">
+        <div>
+          <img
+            style="width: 48px; height: 48px; margin-right: 5px"
+            v-if="scope.row.goodsBanners.length"
+            :src="getImageUrl(scope.row.goodsBanners.length ? scope.row.goodsBanners[0].url : '')"
+          />
+          {{ scope.row.name }}
+        </div>
+      </template>
+    </el-table-column>
+    <el-table-column prop="id" label="商品ID" />
+    <el-table-column prop="brandName" label="品牌" />
     <el-table-column prop="goodsTypeId" label="商品类型">
       <template #default="scope">
         {{ getGoodsTypeName(scope.row.goodsTypeId) }}
@@ -22,8 +34,17 @@
     <el-table-column prop="description" label="备注" />
     <el-table-column prop="" label="详情">
       <template #default="scope">
-        <a style="cursor: pointer" @click="goGoodsDetail(scope.row.id)">详情</a>
-        <a style="cursor: pointer" @click="delGoods(scope.row.id, scope.row.name)">删除</a>
+        <a style="cursor: pointer" @click="goGoodsDetail(scope.row.id)">编辑</a>
+        <a
+          style="cursor: pointer; margin-left: 5px"
+          @click="changeGoodsState(scope.row, scope.row.goodsStateId === 1 ? 2 : 1)"
+          >{{ scope.row.goodsStateId === 1 ? '下架' : '上架' }}</a
+        >
+        <a style="cursor: pointer; margin-left: 5px" @click="copyMessageBox(scope.row.id)">复制</a>
+
+        <a style="cursor: pointer; margin-left: 5px" @click="delGoods(scope.row.id, scope.row.name)"
+          >删除</a
+        >
       </template>
     </el-table-column>
   </el-table>
@@ -43,13 +64,21 @@
 
 <script setup lang="ts">
 import { reactive, ref, onMounted, watchEffect, computed, watch } from 'vue'
-import { searchGoodsApi, deleteGoodsApi } from '@/api/goods'
+import {
+  searchGoodsApi,
+  deleteGoodsApi,
+  updateGoodsApi,
+  updateGoodsStateApi,
+  copyGoodsApi
+} from '@/api/goods'
 import moment from 'moment'
 import { useRouter, useRoute } from 'vue-router'
 import Screen from './screen.vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { baseURL } from '@/api/http'
 import type { Action } from 'element-plus'
 import { useStore, mapState } from 'vuex'
+
 const $store = useStore()
 const route = useRoute()
 
@@ -58,12 +87,21 @@ const loading = ref(true)
 let obj = mapState('goodsMng', ['screen'])
 let screen: any = computed(obj.screen.bind({ $store }))
 
+const screenKey = computed(() => route.path)
+
+const goodsStateId = computed(() => {
+  return route.name === '在售商品' ? 1 : 2
+})
+watch(
+  () => goodsStateId.value,
+  (val: number) => {
+    pagination.currentPage = 1
+  }
+)
 watch(
   () => route.query,
   (val: any) => {
-    if (route.path === '/goodsMng/myGoods/onSale') {
-      pagination.currentPage = val.page * 1
-    }
+    pagination.currentPage = val.page * 1
   }
 )
 
@@ -72,7 +110,7 @@ watch(
   (newValue, oldValue) => {
     pagination.currentPage = 1
     router.push({
-      path: '/goodsMng/myGoods/onSale',
+      path: route.path,
       query: { page: 1 }
     })
   },
@@ -95,13 +133,32 @@ const pagination = reactive<pagination_type>({
   total: 0
 })
 
+const getImageUrl = (url: string) => {
+  return baseURL + '/' + url
+}
 const handleCurrentChange = (currentPage: any) => {
-  router.push({ path: '/goodsMng/myGoods/onSale', query: { page: currentPage } })
+  router.push({ path: route.path, query: { page: currentPage } })
 }
 
 watchEffect(() => {
-  pagination.currentPage && _searchGoods()
+  pagination.currentPage && searchGoods()
 })
+
+const copyMessageBox = (id: number) => {
+  ElMessageBox.alert('复制后，将生成相同参数的新产品，确定复制该产品吗？', '复制提示', {
+    confirmButtonText: '确认复制',
+    showCancelButton: true,
+    cancelButtonText: '取消',
+    callback: async (action: Action) => {
+      if (action === 'confirm') {
+        await copyGoodsApi({
+          id
+        })
+        searchGoods()
+      }
+    }
+  })
+}
 
 const delGoods = (id: string, name: string) => {
   ElMessageBox.alert(`确定删除商品“${name}”吗？`, '删除商品', {
@@ -143,34 +200,59 @@ const getGoodsTypeName = (goodsTypeId: string) => {
     return ''
   }
 }
-const closeLocationModal = () => {
-  currentGoods.value = {}
+
+const changeGoodsState = async (goods: any, goodsStateId: number) => {
+  if (goodsStateId === 2) {
+    ElMessageBox.alert('确认下架该商品吗？下架后小程序将无法售卖，请谨慎操作', '下架提示', {
+      confirmButtonText: '确认下架',
+      showCancelButton: true,
+      cancelButtonText: '取消',
+      callback: async (action: Action) => {
+        if (action === 'confirm') {
+          await updateGoodsStateApi({
+            ...goods,
+            goodsStateId,
+            successMessage: true
+          })
+          searchGoods()
+          // emit('deleteCategory', props.data.id)
+        }
+      }
+    })
+    return
+  }
+  await updateGoodsStateApi({
+    ...goods,
+    goodsStateId,
+    successMessage: true
+  })
+  searchGoods()
 }
-async function _searchGoods() {
+
+async function searchGoods() {
   loading.value = true
 
   try {
-    const { deviceName, siteName, goodsTypeId } = screen.value
+    const { name, id, goodsTypeId } = screen.value
     interface Screen {
       goodsTypeId?: number
-      deviceName?: string
-      siteName?: string
-      time?: number
+      name?: string
+      id?: number
     }
     const screenParams: Screen = {}
-    if (deviceName !== '') {
-      screenParams.deviceName = deviceName
+    if (name !== '' && name !== null) {
+      screenParams.name = name
     }
-    if (siteName !== '') {
-      screenParams.siteName = siteName
+    if (id) {
+      screenParams.id = id
     }
     if (goodsTypeId) {
       screenParams.goodsTypeId = goodsTypeId
-      screenParams.time = 300
     }
     const params = {
       page: pagination.currentPage,
-      pageSize: pagination.pageSize
+      pageSize: pagination.pageSize,
+      goodsStateId: goodsStateId.value
     }
 
     const res: any = await searchGoodsApi({
@@ -181,9 +263,7 @@ async function _searchGoods() {
       goodsList.value = []
       return
     }
-    let list = [...res.data.list]
-
-    goodsList.value = list
+    goodsList.value = res.data.list
     pagination.total = res.data.total
   } catch (error) {
     console.error(error)

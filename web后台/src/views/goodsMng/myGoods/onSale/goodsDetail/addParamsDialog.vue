@@ -2,7 +2,7 @@
   <el-dialog
     v-model="addParamsDialogVisible"
     title="添加参数"
-    width="20%"
+    width="30%"
     :z-index="20"
     destroy-on-close
   >

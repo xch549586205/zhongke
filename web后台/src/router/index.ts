@@ -38,7 +38,7 @@ export const routes = [
             hide: true,
             name: '下架商品',
             query: { page: 1 },
-            component: () => import('../views/goodsMng/myGoods/offShelf/index.vue')
+            component: () => import('../views/goodsMng/myGoods/onSale/index.vue')
           },
           {
             hide: true,
@@ -50,10 +50,10 @@ export const routes = [
         ]
       },
       {
-        path: '/goodsMng/goodsInventory',
+        path: '/goodsMng/sku',
         name: '商品库存',
         query: { page: 1 },
-        component: () => import('../views/goodsMng/goodsInventory/index.vue')
+        component: () => import('../views/goodsMng/sku/index.vue')
       },
       {
         path: '/goodsMng/goodsClassification',
@@ -110,7 +110,7 @@ export const routes = [
         path: '/userMng/distributionList',
         name: '下级分销',
         query: { page: 1 },
-        component: () => import('../views/userMng/distributionList/index.vue')
+        component: () => import('../views/userMng/userList/index.vue')
       }
     ]
   }

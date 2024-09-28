@@ -43,7 +43,7 @@
             <img :src="getCategoryContentBannerImage(categoryContent.categoryBanner)" />
           </div>
           <div class="categoryContentDetail">
-            <div style="margin-right: 10px;">{{ categoryContent.name }}</div>
+            <div style="margin-right: 10px">{{ categoryContent.name }}</div>
             <div>{{ categoryContent.time }} 创建</div>
           </div>
           <div class="hover">
@@ -149,6 +149,9 @@ const getCategoryContentBannerImage = (categoryBanner: Array<Image>) => {
 }
 
 const getCategoryContentListByCategoryId = (categoryId?: number) => {
+  if (!categoryContentList.value || !categoryContentList.value.length) {
+    return []
+  }
   return categoryContentList.value.filter((c: CategoryContent) => c.categoryId === categoryId)
 }
 
@@ -254,13 +257,10 @@ const router = useRouter()
       .categoryContentDetail {
         padding: 16px;
         div:nth-child(1) {
-          width: 72px;
-          height: 25px;
           font-family: PingFangSC-Medium;
           font-weight: 500;
           font-size: 18px;
           color: #000000d9;
-          line-height: 24.96px;
         }
         div:nth-child(2) {
           margin-top: 4px;
