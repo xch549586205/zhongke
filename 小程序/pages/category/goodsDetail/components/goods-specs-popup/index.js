@@ -7,14 +7,21 @@ import Toast from 'tdesign-miniprogram/toast/index';
 
 ComponentWithComputed({
   computed: {
+
+    skuList(data) {
+      const {
+        goodsSku
+      } = data.goodsInfo
+      return goodsSku || {}
+    },
     selectedSkuInfo(data) {
       const {
         selectedSku,
-        goodsSku
+        skuList
       } = data
-      return goodsSku.filter(sku => sku.id === selectedSku)[0] || {}
+      return skuList.filter(sku => sku.id === selectedSku)[0] || {}
     },
-    currentSkuPrice(data) {
+    selectedSkuPrice(data) {
       const {
         selectedSkuInfo,
         authorityId
@@ -39,7 +46,7 @@ ComponentWithComputed({
       type: Object,
       value: {},
     },
-    src: {
+    image: {
       type: String,
     },
     title: String,
@@ -47,34 +54,11 @@ ComponentWithComputed({
       type: Boolean,
       value: false,
     },
-    limitBuyInfo: {
-      type: String,
-      value: '',
-    },
-    isStock: {
-      type: Boolean,
-      value: true,
-    },
-    limitMaxCount: {
+    buyNum: {
       type: Number,
-      value: 999,
-    },
-    limitMinCount: {
-      type: Number,
-      value: 1,
-    },
-
-    goodsSku: {
-      type: Array,
-      value: [],
-    },
-
-    count: {
-      type: Number,
-      value: 1,
-      observer(count) {
+      observer(buyNum) {
         this.setData({
-          buyNum: count,
+          buyNum,
         });
       },
     },
@@ -100,12 +84,12 @@ ComponentWithComputed({
 
 
     handlePopupHide() {
-      this.triggerEvent('closeSpecsPopup', {
+      this.triggerEvent('closeSkuSelectPopup', {
         show: false,
       });
     },
 
-    skuConfirm(e) {
+    skuConfirm() {
       this.triggerEvent('skuConfirm', {
         buyNum: this.data.buyNum,
         selectedSku: this.data.selectedSku
@@ -120,34 +104,14 @@ ComponentWithComputed({
       this.triggerEvent('addCart');
     },
 
-    buyNow() {
-      const {
-        isAllSelectedSku
-      } = this.data;
-      const {
-        isStock
-      } = this.properties;
-      if (!isStock) return;
-      this.triggerEvent('buyNow', {
-        isAllSelectedSku,
-      });
-    },
-    chooseSpec(e) {
+
+    chooseSku(e) {
       const {
         id
       } = e.currentTarget.dataset
       this.setData({
         selectedSku: id
       })
-    },
-    // 总处理
-    setBuyNum(buyNum) {
-      this.setData({
-        buyNum,
-      });
-      this.triggerEvent('changeNum', {
-        buyNum,
-      });
     },
 
     handleBuyNumChange(e) {

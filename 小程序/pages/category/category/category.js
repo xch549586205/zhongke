@@ -22,7 +22,6 @@ Page({
     goodsTypeList: [],
     sideBarIndex: 1,
     scrollTop: 0,
-    height: 0,
   },
   onShow() {
     this.getTabBar().init();
@@ -60,22 +59,18 @@ Page({
     }
   },
   goGoodsDetail(e) {
-
     const {
       id
     } = e.currentTarget.dataset
-    console.log(id)
     wx.navigateTo({
       url: '/pages/category/goodsDetail/goodsDetail?goodsId=' + id
     });
   },
+
   async onLoad() {
+    const query = wx.createSelectorQuery().in(this)
     this.getGoodsTypeList()
-    await this.searchGoods()
-    this.setData({
-      height: wx.getWindowInfo().windowHeight - wx.getWindowInfo().screenTop
-    })
-    const query = wx.createSelectorQuery().in(this);
+    await this.searchGoods();
     const {
       sideBarIndex
     } = this.data;
@@ -105,6 +100,11 @@ Page({
       })
     }
   },
+  goSearchSkuPage() {
+    wx.navigateTo({
+      url: '/pages/category/search/index'
+    });
+  },
   async searchGoods() {
     try {
       const res = await searchGoodsApi({
@@ -126,31 +126,41 @@ Page({
       value
     } = e.detail;
     if (value === 0) {
+      wx.navigateTo({
+        url: '/pages/skuList/skuList'
+      });
       return
     }
-    this.setData({
-      sideBarIndex: value,
-      scrollTop: this.offsetTopList[value]
-    });
+    const query = wx.createSelectorQuery().in(this)
+    query.select('.search').boundingClientRect(data => {
+      this.setData({
+        sideBarIndex: value,
+        scrollTop: this.offsetTopList[value] - data.height
+      });
+    }).exec();
+
+
   },
   onScroll(e) {
     const {
       scrollTop
     } = e.detail;
-    const threshold = 50; // 下一个标题与顶部的距离
-    if (scrollTop < threshold) {
-      this.setData({
-        sideBarIndex: 1
-      });
-      return;
-    }
+    const query = wx.createSelectorQuery().in(this)
+    query.select('.search').boundingClientRect(data => {
+      const threshold = data.height + 30
+      if (scrollTop < threshold) {
+        this.setData({
+          sideBarIndex: 1
+        });
+        return;
+      }
+      const index = this.offsetTopList.findIndex((top) => top > scrollTop && top - scrollTop <= threshold);
+      if (index > -1) {
+        this.setData({
+          sideBarIndex: index
+        });
+      }
+    }).exec();
 
-    const index = this.offsetTopList.findIndex((top) => top > scrollTop && top - scrollTop <= threshold);
-
-    if (index > -1) {
-      this.setData({
-        sideBarIndex: index
-      });
-    }
   },
 });

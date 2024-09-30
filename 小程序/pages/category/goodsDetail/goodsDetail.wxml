@@ -4,8 +4,8 @@
     <view class="goods-info">
       <view class="goods-number">
         <view class="goods-price">
-          <price wr-class="class-goods-price" symbol-class="class-goods-symbol" price="{{minSalePrice}}" type="lighter" />
-          <view class="goods-price-up">起</view>
+          <price wr-class="class-goods-price" symbol-class="class-goods-symbol" price="{{ currentSku.price||minSalePrice}}" type="lighter" />
+          <view class="goods-price-up" wx:if="{{!currentSku.price}}">起</view>
         </view>
         <!-- <view class="sold-num">已售{{soldNum}}</view> -->
       </view>
@@ -23,17 +23,17 @@
       <view class="goods-intro">{{goodsInfo.description}}</view>
 
     </view>
-    <view class="spu-select" bindtap="showSkuSelectPopup">
-      <view class="label">已选</view>
+    <view class="spu-select" bindtap="showParamPopup">
+      <view class="label">参数</view>
       <view class="content">
-        <view class="{{!goodsInfo.description ? 'tintColor' : ''}}">
-          请选择
+        <view class="tintColor">
+          品牌 · 参数 · 标签
         </view>
         <t-icon name="chevron-right" size="40rpx" color="#BBBBBB" />
       </view>
     </view>
     <view class="spu-select" bindtap="showSkuSelectPopup">
-      <view class="label">已选</view>
+      <view class="label"> {{selectedSku ? '已选': '规格'}} </view>
       <view class="content">
         <view class="{{!selectedSku ? 'tintColor' : ''}}">
           {{selectedSku ? currentSku.specName : '请选择'}}
@@ -41,8 +41,20 @@
         <t-icon name="chevron-right" size="40rpx" color="#BBBBBB" />
       </view>
     </view>
-    <goods-specs-popup id="goodsSpecsPopup" wx:if="{{isSpuSelectPopupShow}}" selectedSku="{{selectedSku}}" show="{{isSpuSelectPopupShow}}" goodsInfo='{{goodsInfo}}' title="{{goodsInfo.name || ''}}" src="{{goodsBanners[0]}}" goodsSku="{{goodsInfo.goodsSku || []}}" bind:closeSpecsPopup="handlePopupHide" bind:skuConfirm='skuConfirm' bind:change="chooseSpecItem" bind:changeNum="changeNum" bind:addCart="addCart" bind:buyNow="gotoBuy" bind:specsConfirm="specsConfirm" isStock="{{false}}" outOperateStatus="{{outOperateStatus}}">
-    </goods-specs-popup>
   </view>
+  <view class="desc-content">
+    <view class="desc-content__title" wx:if="{{goodsDetails.length > 0}}">
+      <span class="desc-content__title--text">详情介绍</span>
+    </view>
+    <view wx:if="{{goodsDetails.length > 0}}" wx:for="{{goodsDetails}}" wx:key="index">
+      <t-image t-class="desc-content__img" src="{{item}}" mode="widthFix" />
+    </view>
+  </view>
+  <view class="goods-bottom-operation">
+    <buy-bar jumpArray="{{jumpArray}}" shopCartNum="{{1}}" buttonType="{{1}}" bind:toAddCart="toAddCart" bind:toNav="toNav" bind:toBuyNow="buyItNow" class="goods-details-card" />
+  </view>
+  <goods-specs-popup id="goodsSpecsPopup" wx:if="{{isSpuSelectPopupShow}}" selectedSku="{{selectedSku}}" show="{{isSpuSelectPopupShow}}" goodsInfo='{{goodsInfo}}' image="{{goodsBanners[0]}}" buyNum="{{buyNum}}" bind:closeSkuSelectPopup="closeSkuSelectPopup" bind:skuConfirm='skuConfirm' bind:addCart="addCart" bind:buyNow="gotoBuy" bind:specsConfirm="specsConfirm">
+  </goods-specs-popup>
+  <goods-param-popup wx:if="{{isParamPopupShow}}" show="{{isParamPopupShow}}" bind:closeParamPopup='closeParamPopup' />
 
 </view>

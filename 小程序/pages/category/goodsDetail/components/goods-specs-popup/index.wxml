@@ -4,12 +4,12 @@
       <t-icon name="close" size="36rpx" />
     </view>
     <view class="popup-sku-header">
-      <t-image t-class="popup-sku-header__img" src="{{src}}" />
+      <t-image t-class="popup-sku-header__img" src="{{image}}" />
       <view class="popup-sku-header__goods-info">
-        <view class="popup-sku__goods-name">{{title}}</view>
+        <view class="popup-sku__goods-name">{{goodsInfo.name}}</view>
         <view class="goods-price-container">
           <view class="popup-sku__price">
-            <price wx:if="{{selectedSku}}" price="{{currentSkuPrice }}" wr-class="popup-sku__price-num" symbol-class="popup-sku__price-symbol" />
+            <price wx:if="{{selectedSku}}" price="{{selectedSkuPrice }}" wr-class="popup-sku__price-num" symbol-class="popup-sku__price-symbol" />
           </view>
         </view>
       </view>
@@ -17,7 +17,7 @@
     <view class="popup-sku-body">
       <view class="popup-sku-group-container">
         <view class="popup-sku-row">
-          <view wx:for="{{goodsSku}}" wx:key="id" class="popup-sku-row__item {{selectedSku===item.id ? 'popup-sku-row__item--active' : ''}} " data-id="{{ item.id}}" data-val="{{valuesItem.specValue}}" bindtap="chooseSpec">
+          <view wx:for="{{skuList}}" wx:key="id" class="popup-sku-row__item {{selectedSku===item.id ? 'popup-sku-row__item--active' : ''}} " data-id="{{ item.id}}" data-val="{{valuesItem.specValue}}" bindtap="chooseSku">
             {{item.specName}}
           </view>
         </view>
@@ -35,4 +35,5 @@
       </view>
     </view>
   </view>
+
 </t-popup>

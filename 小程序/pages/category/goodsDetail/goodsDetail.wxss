@@ -190,7 +190,7 @@ page {
 .goods-detail-page .desc-content {
   margin-top: 20rpx;
   background-color: #fff;
-  padding-bottom: 120rpx;
+  padding-bottom: 200rpx;
 }
 
 .goods-detail-page .desc-content__title {

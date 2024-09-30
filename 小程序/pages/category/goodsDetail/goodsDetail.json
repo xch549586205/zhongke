@@ -3,12 +3,15 @@
   "usingComponents": {
     "t-tag": "tdesign-miniprogram/tag/tag",
     "t-toast": "tdesign-miniprogram/toast/toast",
+    "t-image": "/components/webp-image/index",
     "t-rate": "tdesign-miniprogram/rate/rate",
     "t-swiper": "tdesign-miniprogram/swiper/swiper",
     "t-swiper-nav": "tdesign-miniprogram/swiper-nav/swiper-nav",
+    "buy-bar": "./components/buy-bar/index",
     "t-button": "tdesign-miniprogram/button/button",
     "t-icon": "tdesign-miniprogram/icon/icon",
     "goods-specs-popup": "./components/goods-specs-popup/index",
+    "goods-param-popup": "./components/goods-param-popup/index",
     "t-popup": "tdesign-miniprogram/popup/popup",
     "price": "/components/price/index"
   }

@@ -44,6 +44,8 @@ Page({
       type: 'fraction'
     },
     current: 0,
+    isSpuSelectPopupShow: false,
+    isParamPopupShow: false
   },
   computed: {
     currentSku(data) {
@@ -56,8 +58,17 @@ Page({
       if (!goodsSku || !selectedSku) {
         return {}
       }
-      return goodsSku.filter(sku => sku.id === selectedSku)[0] || {}
+      const sku = goodsSku.filter(sku => sku.id === selectedSku)[0] || {}
+      if (!Object.keys(sku).length) {
+        return {}
+      }
+      const price = sku.skuPrice.filter(sp => sp.authorityId === data.authorityId)[0].price
+      return {
+        ...sku,
+        price
+      }
     },
+
     goodsBanners(data) {
       const {
         goodsBanners
@@ -66,6 +77,17 @@ Page({
         return []
       }
       return goodsBanners.map(banner =>
+        baseUrl + '/' + banner.url
+      ) || []
+    },
+    goodsDetails(data) {
+      const {
+        goodsDetails
+      } = data.goodsInfo
+      if (!goodsDetails || !goodsDetails.length) {
+        return []
+      }
+      return goodsDetails.map(banner =>
         baseUrl + '/' + banner.url
       ) || []
     },
@@ -94,19 +116,27 @@ Page({
     //   return goodsSku
     // }
   },
-  handlePopupHide() {
-    this.setData({
-      isSpuSelectPopupShow: false,
-    });
-  },
-
   showSkuSelectPopup() {
     this.setData({
       isSpuSelectPopupShow: true,
     });
   },
 
-
+  closeSkuSelectPopup() {
+    this.setData({
+      isSpuSelectPopupShow: false,
+    });
+  },
+  showParamPopup() {
+    this.setData({
+      isParamPopupShow: true,
+    });
+  },
+  closeParamPopup() {
+    this.setData({
+      isParamPopupShow: false,
+    });
+  },
   toNav(e) {
     const {
       url
@@ -152,7 +182,6 @@ Page({
   },
 
   skuConfirm(e) {
-    console.log(e.detail, 123)
     const {
       buyNum,
       selectedSku
@@ -161,7 +190,7 @@ Page({
       buyNum,
       selectedSku
     })
-    this.handlePopupHide()
+    this.closeSkuSelectPopup()
   },
 
 

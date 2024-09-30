@@ -287,7 +287,7 @@ Page({
 
   navToSearchPage() {
     wx.navigateTo({
-      url: '/pages/goods/search/index'
+      url: '/pages/category/search/index'
     });
   },
   goCategoryContent(e) {

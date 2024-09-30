@@ -1,0 +1,3 @@
+<t-popup visible="{{show}}" placement="bottom" bind:visible-change="handlePopupHide">
+  122321qweqweq
+</t-popup>

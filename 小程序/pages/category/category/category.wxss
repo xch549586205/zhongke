@@ -6,9 +6,20 @@ page .round-image {
   border-radius: 12rpx;
 }
 
+.t-search__input-container {
+  border-radius: 32rpx !important;
+  height: 64rpx !important;
+  margin: 16rpx 32rpx;
+}
+
+.t-search__input {
+  font-size: 28rpx !important;
+  color: rgb(116, 116, 116) !important;
+}
+
 .side-bar-wrapper {
   display: flex;
-  height: 100vh;
+  height: calc(100vh - 96rpx - var(--td-tab-bar-height, 80rpx) - env(safe-area-inset-bottom) - 32rpx);
 }
 
 .side-bar-wrapper .content {

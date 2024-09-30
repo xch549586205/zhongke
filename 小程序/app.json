@@ -2,6 +2,7 @@
   "pages": [
     "pages/home/home",
     "pages/category/category/category",
+    "pages/category/search/index",
     "pages/usercenter/index",
     "pages/usercenter/person-info/index",
     "pages/usercenter/address/list/index",
@@ -31,7 +32,8 @@
     "pages/order/invoice/index",
     "pages/usercenter/name-edit/index",
     "pages/home/categoryContent/categoryContent",
-    "pages/category/goodsDetail/goodsDetail"
+    "pages/category/goodsDetail/goodsDetail",
+    "pages/skuList/skuList"
   ],
   "tabBar": {
     "custom": true,
