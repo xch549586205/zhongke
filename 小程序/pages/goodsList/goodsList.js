@@ -1,7 +1,8 @@
 /* eslint-disable no-param-reassign */
+
 import {
-  getSearchResult
-} from '../../../services/good/fetchSearchResult';
+  searchGoodsApi
+} from "../../services/goods.js"
 import Toast from 'tdesign-miniprogram/toast/index';
 
 const initFilters = {
@@ -27,7 +28,7 @@ Page({
   },
 
   total: 0,
-  pageNum: 1,
+  page: 1,
   pageSize: 30,
 
   onLoad(options) {
@@ -51,7 +52,7 @@ Page({
       maxVal
     } = this.data;
     const {
-      pageNum,
+      page,
       pageSize
     } = this;
     const {
@@ -60,9 +61,9 @@ Page({
     } = filter;
     const params = {
       sort: 0, // 0 综合，1 价格
-      pageNum: 1,
+      page: 1,
       pageSize: 30,
-      keyword: keywords,
+      name: keywords,
     };
 
     if (sorts) {
@@ -79,7 +80,7 @@ Page({
     if (reset) return params;
     return {
       ...params,
-      pageNum: pageNum + 1,
+      page: page + 1,
       pageSize,
     };
   },
@@ -96,16 +97,15 @@ Page({
       loading: true,
     });
     try {
-      const result = await getSearchResult(params);
-      const code = 'Success';
+      const result = await searchGoodsApi(params);
       const data = result;
-      if (code.toUpperCase() === 'SUCCESS') {
+      if (data.list.length) {
         const {
-          spuList,
-          totalCount = 0
+          list,
+          total = 0
         } = data;
-        if (totalCount === 0 && reset) {
-          this.total = totalCount;
+        if (total === 0 && reset) {
+          this.total = total;
           this.setData({
             emptyInfo: {
               tip: '抱歉，未找到相关商品',
@@ -118,17 +118,16 @@ Page({
           return;
         }
 
-        const _goodsList = reset ? spuList : goodsList.concat(spuList);
+        const _goodsList = reset ? list : goodsList.concat(list);
         _goodsList.forEach((v) => {
-          v.tags = v.spuTagList.map((u) => u.title);
+          v.tags = v.goodsTags.map((u) => u.name);
           v.hideKey = {
             desc: true
           };
         });
-        const _loadMoreStatus = _goodsList.length === totalCount ? 2 : 0;
-        this.pageNum = params.pageNum || 1;
-        this.total = totalCount;
-        console.log(_goodsList, 'goodsList')
+        const _loadMoreStatus = _goodsList.length === total ? 2 : 0;
+        this.page = params.page || 1;
+        this.total = total;
         this.setData({
           goodsList: _goodsList,
           loadMoreStatus: _loadMoreStatus,
@@ -223,7 +222,7 @@ Page({
       overall,
     });
 
-    this.pageNum = 1;
+    this.page = 1;
     this.setData({
         goodsList: [],
         loadMoreStatus: 0,
@@ -293,7 +292,7 @@ Page({
         message,
       });
     }
-    this.pageNum = 1;
+    this.page = 1;
     this.setData({
         show: false,
         minVal: '',

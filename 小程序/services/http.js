@@ -6,7 +6,7 @@ module.exports = {
     const fullUrl = `${baseUrl}${url}`;
 
     const token =
-      wx.getStorageSync("installToken") || wx.getStorageSync("token") || "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiIiwic2NvcGVzIjpudWxsLCJtZXRhZGF0YSI6eyJhdXRob3JpdHlJZCI6IjYiLCJuaWNrTmFtZSI6Iui2hee6p-euoeeQhuWRmCIsInBob25lTnVtYmVyIjoiIiwidXNlck5hbWUiOiJhZG1pbiJ9LCJleHAiOjE3Mjc4ODQyOTcsInN1YiI6IjA4NTFmMjJlLTBmMjQtNDhmNy1iZDk2LTc3MjM5NTc5Y2I4NSJ9.hfnu822uHcU6cLFL8asMJYtQ6XEln8eZ6CnvRSJVSeyRC1N5mbWvx4-gZqwGCQM8QzyeoUTNcboCUP3ri8HumCdVfqM0ODlhWrgvK7VjwMIKfpe-AWhFuT0dHNy_IpNlUqvVPkl90hohfCUmmt4KblF4izXeSD2t2IHgO5WtHlr0yWYDDw8k9uqd7OzrpjdNBaVhG0oBnqVGAk4fgEObZdB8O0SbImAnKaHNH3fp7HbfMO3jhFa_qiCV353nJbaPwPt8akHscIhm9pP0OoRhhCR6z_7KgfO6erJM8O9T51VP0VLEku75BZ5zJ3aPI4Nll8LdlG214-qekElN4IzSWg";
+      wx.getStorageSync("installToken") || wx.getStorageSync("token") || "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiIiwic2NvcGVzIjpudWxsLCJtZXRhZGF0YSI6eyJhdXRob3JpdHlJZCI6IjYiLCJuaWNrTmFtZSI6Iui2hee6p-euoeeQhuWRmCIsInBob25lTnVtYmVyIjoiIiwidXNlck5hbWUiOiJhZG1pbiJ9LCJleHAiOjE3Mjg3NTE1MTgsInN1YiI6IjE4OWJiMjQ2LTAxMGEtNDc3NC1iMjMyLTdlMzU1ZDMzMGNhZCJ9.zfVuxyv7KJD3Q4rQMD_WzoAzmoPHtKdL5WEmanZzvOiR13nDpvfRumjEZhbik71bgzTC4NcP-g7ceH7kHNK_QDKtNBzb9LH5uBGzKFXqZtpWTWkevy-m4nB_yR0HRdONLwi0kzsKhZG701peGuLEErJZ-LTbIWRBEPo93WaiG_GLUu0Unxy8En4Yjvn0pmD81FFpTiGKpKUUDanrqpL584T4-NNctH7K9Qdy88QHdmPaQ1saMdWp0NxmSAf0en-eMem_J3hcjqvE4_GHGy4T44fHRzlKkyN58ajr8LF98neI25Fr9WUafvtIBocB5yBOl0z_zqkeQOaKfGfGDcWAGA";
     if (url.indexOf("/device/getDevicesLatestState") === -1) {
       wx.showLoading({
         title: "loading...",

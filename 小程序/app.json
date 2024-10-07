@@ -33,7 +33,8 @@
     "pages/usercenter/name-edit/index",
     "pages/home/categoryContent/categoryContent",
     "pages/category/goodsDetail/goodsDetail",
-    "pages/skuList/skuList"
+    "pages/skuList/skuList",
+    "pages/goodsList/goodsList"
   ],
   "tabBar": {
     "custom": true,
