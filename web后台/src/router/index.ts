@@ -10,10 +10,12 @@ export const routes = [
   {
     path: '/goodsMng',
     redirect: '/goodsMng/myGoods/onSale?page=1',
+    props: true,
     name: '商品管理',
     children: [
       {
         path: '/goodsMng/myGoods',
+        props: true,
         name: '我的商品',
         query: { page: 1 },
         redirect: '/goodsMng/myGoods/onSale?page=1',
@@ -23,12 +25,14 @@ export const routes = [
             path: '/goodsMng/myGoods/onSale',
             name: '在售商品',
             query: { page: 1 },
+            props: true,
             hide: true,
             component: () => import('../views/goodsMng/myGoods/onSale/index.vue')
           },
           {
             path: '/goodsMng/myGoods/onSale/goodsDetail',
             name: '添加商品',
+            props: true,
             query: { id: '' },
             hide: true,
             component: () => import('../views/goodsMng/myGoods/onSale/goodsDetail/index.vue')

@@ -187,7 +187,11 @@
     </el-form>
   </div>
   <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 30px">
-    <el-button type="primary" @click="addGoods">发布商品</el-button>
+    <el-button
+      type="primary"
+      @click="addGoods(ruleFormRef1, ruleFormRef2, ruleFormRef3, ruleFormRef4)"
+      >发布商品</el-button
+    >
     <!-- <el-button v-if="!id" @click="saveLocal">存草稿 </el-button> -->
     <el-button @click="goBack">取消</el-button>
   </div>
@@ -203,12 +207,17 @@ import addParamsDialog from './addParamsDialog.vue'
 import type { UploadProps, UploadUserFile } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import { baseURL } from '@/api/http'
-import type { FormRules } from 'element-plus'
+import type { FormRules, FormInstance } from 'element-plus'
 import { useRoute, useRouter } from 'vue-router'
 import { storage } from '@/util'
 const router = useRouter()
 const route = useRoute()
 const $store = useStore()
+
+const ruleFormRef1 = ref<FormInstance>()
+const ruleFormRef2 = ref<FormInstance>()
+const ruleFormRef3 = ref<FormInstance>()
+const ruleFormRef4 = ref<FormInstance>()
 interface Authority {
   authorityId: string
   authorityName: string
@@ -267,7 +276,7 @@ const formBox1 = reactive<FormBox1>({
   goodsTypeId: ''
 })
 const formBox1Rules = reactive<FormRules<FormBox1>>({
-  goodsTypeId: [{ required: true, message: '请选择商品分类', trigger: 'blur' }]
+  goodsTypeId: [{ required: true, message: '请选择商品分类', trigger: ['blur', 'change'] }]
 })
 //  FormBox1 end
 
@@ -292,9 +301,9 @@ const formBox2 = reactive<FormBox2>({
   goodsPara: []
 })
 const formBox2Rules = reactive<FormRules<FormBox2>>({
-  name: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
-  description: [{ required: true, message: '请输入商品描述', trigger: 'blur' }],
-  brandName: [{ required: true, message: '请输入品牌名称', trigger: 'blur' }]
+  name: [{ required: true, message: '请输入商品名称', trigger: ['blur', 'change'] }],
+  description: [{ required: true, message: '请输入商品描述', trigger: ['blur', 'change'] }],
+  brandName: [{ required: true, message: '请输入品牌名称', trigger: ['blur', 'change'] }]
 })
 //  FormBox2 end
 
@@ -317,7 +326,7 @@ const formBox3 = reactive<FormBox3>({
   goodsSku: []
 })
 const formBox3Rules = reactive<FormRules<FormBox3>>({
-  goodsSku: [{ required: true, message: '请检查规格', trigger: 'blur' }]
+  goodsSku: [{ required: true, message: '请检查规格', trigger: ['blur', 'change'] }]
 })
 
 const addSku = () => {
@@ -379,8 +388,8 @@ const formBox4 = reactive<FormBox4>({
   goodsDetails: []
 })
 const formBox4Rules = reactive<FormRules<FormBox4>>({
-  goodsBanners: [{ required: true, message: '请上传', trigger: 'blur' }],
-  goodsDetails: [{ required: true, message: '请上传', trigger: 'blur' }]
+  goodsBanners: [{ required: true, message: '请上传', trigger: ['blur', 'change'] }],
+  goodsDetails: [{ required: true, message: '请上传', trigger: ['blur', 'change'] }]
 })
 const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
   previewImgUrl.value = uploadFile.url!
@@ -411,6 +420,7 @@ interface GoodsTag {
 const goodsState = mapState('goodsMng', ['goodsTagList'])
 const goodsTagList = computed<GoodsTag[]>(goodsState.goodsTagList.bind({ $store }))
 // goods Tag edn
+const emit = defineEmits(['getGoodsNum'])
 
 // GOODS PARAMS start
 const addParamsDialogVisible = ref(false)
@@ -465,7 +475,32 @@ watch(
   { deep: true }
 )
 
-const addGoods = async () => {
+const addGoods = async (
+  ruleFormRef1: FormInstance,
+  ruleFormRef2: FormInstance,
+  ruleFormRef3: FormInstance,
+  ruleFormRef4: FormInstance
+) => {
+  let ruleSuccess = true
+
+  const rules = [ruleFormRef1, ruleFormRef2, ruleFormRef3, ruleFormRef4]
+  const promiseList: any = []
+  rules.forEach((element: FormInstance) => {
+    promiseList.push(
+      element.validate((valid, fields) => {
+        if (valid) {
+          console.log('submit!')
+        } else {
+          ruleSuccess = false
+          console.log('error submit!', fields)
+        }
+      })
+    )
+  })
+  await Promise.all(promiseList)
+  if (!ruleSuccess) {
+    return
+  }
   try {
     const params: any = {
       ...formBox1,
@@ -473,6 +508,7 @@ const addGoods = async () => {
       ...formBox3,
       ...formBox4
     }
+
     if (id.value) {
       params.id = id.value * 1
     }
@@ -513,7 +549,8 @@ const addGoods = async () => {
           storage.setItem('localDraftList', localDraftList)
         }
       }
-      goBack()
+      emit('getGoodsNum')
+        goBack()
     }
   } catch (error) {
     console.error(error)

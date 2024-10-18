@@ -19,6 +19,11 @@ import {
   getCategoryContentListApi,
   getCategoryListApi
 } from "../../services/home.js"
+import {
+  getCartByIdApi
+} from "../../services/cart.js"
+const app = getApp();
+
 Page({
   behaviors: [behavior],
   data: {
@@ -53,12 +58,11 @@ Page({
   },
 
   onShow() {
+    this.init();
     this.getTabBar().init();
   },
 
-  onLoad() {
-    this.init();
-  },
+  onLoad() {},
 
   onReachBottom() {
     if (this.data.goodsListLoadStatus === 0) {
@@ -106,12 +110,26 @@ Page({
       return list
     }
   },
+
+
+
   async init() {
     this.loadHomePage();
     this.getLocation();
+    this.getCartById()
     this.getBannerList()
     await this.getCategoryList();
     this.getCategoryContentList()
+  },
+
+  async getCartById() {
+    try {
+      const userInfo = wx.getStorageSync("userInfo")
+      const res = await getCartByIdApi({
+        id: userInfo.cartId
+      })
+      console.log(res, 123)
+    } catch (error) {}
   },
   async getBannerList() {
     try {
@@ -284,7 +302,11 @@ Page({
       message: '点击加入购物车',
     });
   },
-
+  navToLoginPage() {
+    wx.navigateTo({
+      url: '/pages/login/login'
+    });
+  },
   navToSearchPage() {
     wx.navigateTo({
       url: '/pages/category/search/index'

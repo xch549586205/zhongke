@@ -34,7 +34,8 @@
     "pages/home/categoryContent/categoryContent",
     "pages/category/goodsDetail/goodsDetail",
     "pages/skuList/skuList",
-    "pages/goodsList/goodsList"
+    "pages/goodsList/goodsList",
+    "pages/login/login"
   ],
   "tabBar": {
     "custom": true,

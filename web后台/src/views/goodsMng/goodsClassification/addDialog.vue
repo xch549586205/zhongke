@@ -20,14 +20,27 @@ import { useStore, mapState, mapMutations } from 'vuex'
 const emit = defineEmits(['addGoodsType'])
 const dialogFormVisible = defineModel()
 interface Form {
-  name: string
+  name?: string
 }
 const form: Form = reactive({
   name: ''
 })
-onMounted(() => {})
+interface GoodsType {
+  name?: string
+  id?: string
+}
+interface Props {
+  goodsType: GoodsType
+}
+
+const props = defineProps<Props>()
+onMounted(() => {
+  console.log(props.goodsType.name)
+  form.name = props.goodsType.name
+})
 const confirm = () => {
-  emit('addGoodsType', form)
+  const id = props.goodsType && props.goodsType.id ? props.goodsType.id : ''
+  emit('addGoodsType', form, id)
 }
 </script>
 

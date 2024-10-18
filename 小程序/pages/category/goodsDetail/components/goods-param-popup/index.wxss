@@ -1,1 +1,37 @@
 /* pages/category/goodsDetail/components/goods-param-popup/index.wxss */
+
+.goodsParams {
+  padding: 32rpx;
+}
+
+.title {
+  text-align: center;
+  font-family: PingFangSC-Medium;
+  font-weight: 500;
+  font-size: 32rpx;
+  color: #111111;
+  text-align: center;
+  margin-bottom: 42rpx;
+}
+
+.paramItem {
+  display: flex;
+  border-bottom: 2rpx solid #E0E0E0;
+  min-height: 94rpx;
+  align-items: center;
+
+}
+
+.paramItem .left {
+  width: 160rpx;
+  opacity: 0.4;
+  font-family: AlibabaPuHuiTi_3_55_Regular;
+  font-weight: 400;
+  font-size: 28rpx;
+  color: #000000;
+  letter-spacing: 0;
+}
+
+.label {
+  margin-right: 15rpx;
+}

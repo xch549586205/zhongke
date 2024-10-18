@@ -1,0 +1,19 @@
+<!--index.wxml-->
+<view class="login">
+  <view class="logo">
+    <!-- <image src="../images/logo.png" /> -->
+  </view>
+  <view class="text">⻢上登录，享受您的专属福利</view>
+  <view class="fixed">
+    <view class="btnWrap">
+      <t-button class="btn" style="height: 96rpx" disabled="{{!checked}}" theme="primary" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">
+        获取手机号
+      </t-button>
+    </view>
+
+    <view class="read" style="margin-top: 22rpx">
+      <t-radio t-class-content="bordernone" bind:change="changeChecked" checked="{{checked}}" class="read" block="{{false}}" label="" />
+      已阅读并同意<span bindtap="goServiceAgreement">《用户服务协议》</span>与<span bindtap="goPrivacyAgreement">《隐私政策协议》</span>
+    </view>
+  </view>
+</view>

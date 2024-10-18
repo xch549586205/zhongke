@@ -1,6 +1,7 @@
 <template>
   <div style="display: flex">
     <Screen :key="screenKey" />
+    <el-button type="primary" @click="goGoodsDetail('')">重置</el-button>
     <el-button type="primary" @click="goGoodsDetail('')">+发布商品</el-button>
   </div>
   <el-table v-loading="loading" :data="goodsList" :row-style="{ height: '50px' }">
@@ -78,6 +79,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { baseURL } from '@/api/http'
 import type { Action } from 'element-plus'
 import { useStore, mapState } from 'vuex'
+const emit = defineEmits(['getGoodsNum'])
 
 const $store = useStore()
 const route = useRoute()
@@ -155,6 +157,7 @@ const copyMessageBox = (id: number) => {
           id
         })
         searchGoods()
+        emit('getGoodsNum')
       }
     }
   })
@@ -165,7 +168,9 @@ const delGoods = (id: string, name: string) => {
     confirmButtonText: '删除',
     callback: async (action: Action) => {
       if (action === 'confirm') {
-        const res = await deleteGoodsApi({ id, successMessage: true })
+        await deleteGoodsApi({ id, successMessage: true })
+        searchGoods()
+        emit('getGoodsNum')
       }
     }
   })
@@ -210,7 +215,7 @@ const changeGoodsState = async (goods: any, goodsStateId: number) => {
       callback: async (action: Action) => {
         if (action === 'confirm') {
           await updateGoodsStateApi({
-            ...goods,
+            id: goods.id,
             goodsStateId,
             successMessage: true
           })

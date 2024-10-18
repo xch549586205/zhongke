@@ -9,6 +9,10 @@ Component({
       type: Boolean,
       value: false,
     },
+    goodsInfo: {
+      type: Object,
+      value: {},
+    },
   },
 
   /**

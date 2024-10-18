@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "",
+  "usingComponents": {
+    "t-radio": "tdesign-miniprogram/radio/radio",
+    "t-button": "tdesign-miniprogram/button/button"
+  }
+}

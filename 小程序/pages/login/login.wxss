@@ -1,0 +1,60 @@
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 250rpx;
+  box-sizing: border-box;
+}
+
+.logo image {
+  width: 360rpx;
+  height: 120rpx;
+  margin: auto;
+}
+
+.text {
+  font-family: PingFangSC-Regular;
+  font-weight: 400;
+  font-size: 30rpx;
+  color: #000000;
+  letter-spacing: 0;
+  text-align: center;
+  padding-top: 46rpx;
+}
+
+.fixed {
+  width: 88%;
+  position: fixed;
+  bottom: 100rpx;
+  left: 6%;
+}
+
+.btnWrap {
+  border-radius: 50rpx;
+  overflow: hidden;
+  background: #fff;
+}
+
+.btn {
+  border: none;
+  width: 100%;
+  width: 670rpx;
+  height: 96rpx;
+  line-height: 96rpx;
+  background: #a66d36;
+  font-weight: 400;
+  font-size: 36rpx;
+  color: #ffffff;
+  letter-spacing: 0;
+  text-align: center;
+}
+
+.read {
+  font-family: PingFangSC-Regular;
+  font-weight: 400;
+  font-size: 25rpx;
+}
+
+.read span {
+  color: #a66d36;
+}

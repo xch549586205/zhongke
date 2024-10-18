@@ -116,6 +116,15 @@ Page({
     //   return goodsSku
     // }
   },
+
+  clickAddCar() {
+    if (this.data.currentSku.id) {
+      console.log(this.data.currentSku)
+    } else {
+      this.showSkuSelectPopup()
+    }
+  },
+
   showSkuSelectPopup() {
     this.setData({
       isSpuSelectPopupShow: true,

@@ -3,6 +3,9 @@
 import {
   searchGoodsApi
 } from "../../services/goods.js"
+import {
+  baseUrl
+} from "../../services/http"
 import Toast from 'tdesign-miniprogram/toast/index';
 
 const initFilters = {
@@ -29,7 +32,7 @@ Page({
 
   total: 0,
   page: 1,
-  pageSize: 30,
+  pageSize: 10,
 
   onLoad(options) {
     const {
@@ -62,7 +65,7 @@ Page({
     const params = {
       sort: 0, // 0 综合，1 价格
       page: 1,
-      pageSize: 30,
+      pageSize: 10,
       name: keywords,
     };
 
@@ -119,8 +122,17 @@ Page({
         }
 
         const _goodsList = reset ? list : goodsList.concat(list);
+        const authorityId = '4'
         _goodsList.forEach((v) => {
           v.tags = v.goodsTags.map((u) => u.name);
+          v.thumb = baseUrl + '/' + v.goodsBanners[0].url
+          const sortSkuList = [...v.goodsSku].sort((skuA, skuB) => {
+            const minPrice_skuA = skuA.skuPrice.filter(p => p.authorityId === authorityId)[0].price
+            const minPrice_skuB = skuB.skuPrice.filter(p => p.authorityId === authorityId)[0].price
+            return minPrice_skuA - minPrice_skuB
+          })
+          const minPrice = sortSkuList[0].skuPrice.filter(p => p.authorityId === authorityId)[0].price
+          v.price = minPrice
           v.hideKey = {
             desc: true
           };
@@ -157,9 +169,11 @@ Page({
     });
   },
 
-  handleSubmit() {
+  handleSubmit(e) {
     this.setData({
         goodsList: [],
+        keywords: e.detail.value,
+        page: 1,
         loadMoreStatus: 0,
       },
       () => {
@@ -197,10 +211,10 @@ Page({
       index
     } = e.detail;
     const {
-      spuId
+      id
     } = this.data.goodsList[index];
     wx.navigateTo({
-      url: `/pages/goods/details/index?spuId=${spuId}`,
+      url: '/pages/category/goodsDetail/goodsDetail?goodsId=' + id
     });
   },
 

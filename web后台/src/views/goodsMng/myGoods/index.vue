@@ -4,7 +4,7 @@
     <el-tab-pane :label="`下架商品（${goodsSum.freezing}）`" name="offShelf"> </el-tab-pane>
     <!-- <el-tab-pane label="草稿箱" name="drafts"> </el-tab-pane> -->
   </el-tabs>
-  <router-view></router-view>
+  <router-view @getGoodsNum="getGoodsNum"></router-view>
 </template>
 
 <script setup lang="ts">

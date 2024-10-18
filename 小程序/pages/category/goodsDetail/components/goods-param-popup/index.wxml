@@ -1,3 +1,21 @@
-<t-popup visible="{{show}}" placement="bottom" bind:visible-change="handlePopupHide">
-  122321qweqweq
+<t-popup visible="{{show}}" placement="bottom" bind:visible-change="handlePopupHide" close-btn>
+  <view class='goodsParams'>
+    <view class='title'>产品参数</view>
+    <view class="paramItem">
+      <view class="left">品牌</view>
+      <view class="right">{{goodsInfo.brandName}}</view>
+    </view>
+    <view class="paramItem">
+      <view class="left">标签 </view>
+      <view class="right" style="display: flex;">
+        <view class="label" wx:for="{{goodsInfo.goodsTags}}" wx:for-item="item" wx:key="index">
+          <view>{{item.name}}</view>
+        </view>
+      </view>
+    </view>
+    <view class="paramItem" wx:for="{{goodsInfo.goodsPara}}" wx:for-item="item" wx:key="index">
+      <view class="left">{{item.name}}</view>
+      <view class="right">{{item.value}}</view>
+    </view>
+  </view>
 </t-popup>

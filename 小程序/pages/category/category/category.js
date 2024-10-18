@@ -127,7 +127,7 @@ Page({
     } = e.detail;
     if (value === 0) {
       wx.navigateTo({
-        url: '/pages/skuList/skuList'
+        url: '/pages/goodsList/goodsList'
       });
       return
     }

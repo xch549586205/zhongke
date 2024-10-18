@@ -7,8 +7,13 @@
       >+添加分类</el-button
     >
   </div>
-  <addDialog v-model="addDialogVisible" @addGoodsType="addGoodsType" />
-  <el-table v-loading="loading" :data="goodsTypeList" :row-style="{ height: '50px' }">
+  <addDialog
+    v-model="addDialogVisible"
+    @addGoodsType="addGoodsType"
+    :goodsType="currentEditGoodsType"
+    v-if="addDialogVisible"
+  />
+  <el-table v-loading="loading" :data="filterNameGoodsTypeList" :row-style="{ height: '50px' }">
     <el-table-column type="index" label="序号" width="80">
       <template #default="scope">
         <div>
@@ -17,8 +22,19 @@
       </template>
     </el-table-column>
     <el-table-column prop="name" label="分类名称" />
+    <el-table-column prop="" label="详情">
+      <template #default="scope">
+        <a style="cursor: pointer" @click="showEditDialog(scope.row)">编辑</a>
+        <a
+          style="cursor: pointer; margin-left: 5px"
+          @click="deleteGoodsType(scope.row.id, scope.row.name)"
+        >
+          删除
+        </a>
+      </template>
+    </el-table-column>
   </el-table>
-  <div style="display: flex; padding-top: 10px">
+  <!-- <div style="display: flex; padding-top: 10px">
     <el-pagination
       v-model:current-page="pagination.currentPage"
       style="margin-left: auto"
@@ -29,26 +45,38 @@
       :total="pagination.total"
       @current-change="handleCurrentChange"
     />
-  </div>
+  </div> -->
 </template>
 
 <script setup lang="ts">
 import { reactive, ref, onMounted, watchEffect, computed, watch } from 'vue'
-import { addGoodsTypeApi, getGoodsTypeListApi } from '@/api/goodsType.ts'
+import { addGoodsTypeApi, deleteGoodsTypeApi, updateGoodsTypeApi } from '@/api/goodsType.ts'
 import moment from 'moment'
 import addDialog from './addDialog.vue'
+import type { Action } from 'element-plus'
 import { useRouter, useRoute } from 'vue-router'
-import { ElMessage } from 'element-plus'
 import Screen from './screen.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { useStore, mapState } from 'vuex'
 const $store = useStore()
 const route = useRoute()
 
-const loading = ref(true)
+const loading = ref(false)
+
+interface GoodsType {
+  name?: string
+  id?: string
+}
 const addDialogVisible = ref(false)
+
+const globalDataState = mapState('globalData', ['goodsTypeList'])
+const goodsTypeList = computed<GoodsType[]>(globalDataState.goodsTypeList.bind({ $store }))
 
 let obj = mapState('goodsClassificationMng', ['screen'])
 let screen: any = computed(obj.screen.bind({ $store }))
+
+const currentEditGoodsType = ref<GoodsType>({})
+
 console.log(screen)
 watch(
   () => route.query,
@@ -71,9 +99,16 @@ watch(
   { deep: true }
 )
 
+const filterNameGoodsTypeList = computed(() => {
+  if (!screen.value.name) {
+    return goodsTypeList.value
+  }
+  return goodsTypeList.value.filter(
+    (goodsType: GoodsType) => goodsType.name.indexOf(screen.value.name) !== -1
+  )
+})
 const router = useRouter()
 
-const goodsTypeList = ref<Object[]>([])
 const currentDevice = ref<any>({})
 
 interface pagination_type {
@@ -87,59 +122,53 @@ const pagination = reactive<pagination_type>({
   total: 0
 })
 
+const showEditDialog = (goodsType: GoodsType) => {
+  addDialogVisible.value = true
+  currentEditGoodsType.value = goodsType
+}
+
 const handleCurrentChange = (currentPage: any) => {
   router.push({ path: '/goodsMng/goodsClassification', query: { page: currentPage } })
 }
-watchEffect(() => {
-  pagination.currentPage && getGoodsTypeList()
-})
+watchEffect(() => {})
 
 onMounted(() => {
   pagination.currentPage = router.currentRoute.value.query.page * 1
 })
-
-const addGoodsType = async (form: object) => {
+const deleteGoodsType = (id: string, name: string) => {
   try {
-    await addGoodsTypeApi({
-      ...form
+    ElMessageBox.alert(`确定删除分类“${name}”吗？`, '删除分类', {
+      confirmButtonText: '删除',
+      callback: async (action: Action) => {
+        loading.value = true
+        if (action === 'confirm') {
+          await deleteGoodsTypeApi({ id, successMessage: true })
+          await $store.dispatch('globalData/getGoodsTypeList')
+          loading.value = false
+        }
+      }
+    })
+  } catch (error) {
+    loading.value = false
+  }
+}
+const addGoodsType = async (form: object, id: string) => {
+  loading.value = true
+  try {
+    const API = id ? updateGoodsTypeApi : addGoodsTypeApi
+    await API({
+      ...form,
+      id
     })
     addDialogVisible.value = false
     ElMessage({
       message: '添加成功',
       type: 'success'
     })
-    getGoodsTypeList()
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-async function getGoodsTypeList() {
-  loading.value = true
-  const { name } = screen.value
-
-  try {
-    const params = {
-      page: pagination.currentPage,
-      pageSize: pagination.pageSize
-    }
-    if (name !== '') {
-      params.name = name
-    }
-    const res: any = await getGoodsTypeListApi({
-      ...params
-    })
-    if (!res.data.list) {
-      goodsTypeList.value = []
-      return
-    }
-    let list = [...res.data.list]
-    goodsTypeList.value = list
-    pagination.total = res.data.total
-  } catch (error) {
-    console.error(error)
-  } finally {
+    await $store.dispatch('globalData/getGoodsTypeList')
     loading.value = false
+  } catch (error) {
+    console.error(error)
   }
 }
 </script>
