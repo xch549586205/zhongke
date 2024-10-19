@@ -19,9 +19,7 @@ import {
   getCategoryContentListApi,
   getCategoryListApi
 } from "../../services/home.js"
-import {
-  getCartByIdApi
-} from "../../services/cart.js"
+
 const app = getApp();
 
 Page({
@@ -116,21 +114,12 @@ Page({
   async init() {
     this.loadHomePage();
     this.getLocation();
-    this.getCartById()
     this.getBannerList()
     await this.getCategoryList();
     this.getCategoryContentList()
   },
 
-  async getCartById() {
-    try {
-      const userInfo = wx.getStorageSync("userInfo")
-      const res = await getCartByIdApi({
-        id: userInfo.cartId
-      })
-      console.log(res, 123)
-    } catch (error) {}
-  },
+
   async getBannerList() {
     try {
       const res = await getBannerListApi({

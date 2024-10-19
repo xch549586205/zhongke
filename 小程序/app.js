@@ -5,6 +5,7 @@ import {
   getCartByIdApi
 } from "./services/cart.js"
 
+
 App({
   onLaunch: async function () {
     if (!wx.getStorageSync("token")) {
@@ -12,10 +13,23 @@ App({
       // 获取页面栈顶页面
       let pages = getCurrentPages();
       let currentPage = pages[pages.length - 1];
-      console.log(currentPage, 'currentPage')
+      this.getCartById()
       if (currentPage.init) {
         setTimeout(currentPage.init, 200)
       }
+    } else {
+      this.getCartById()
+    }
+  },
+  async getCartById() {
+    try {
+      const userInfo = wx.getStorageSync("userInfo")
+      const res = await getCartByIdApi({
+        id: userInfo.cartId
+      })
+      this.globalData.cart = res.data
+    } catch (error) {
+      console.error(error)
     }
   },
   onShow: function () {},

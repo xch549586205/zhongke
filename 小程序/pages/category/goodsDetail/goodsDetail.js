@@ -1,8 +1,10 @@
 import Toast from 'tdesign-miniprogram/toast/index';
 import {
-  getGoodsByIdApi
+  getGoodsByIdApi,
 } from '../../../services/goods.js';
-
+import {
+  addSkusToCartApi
+} from '../../../services/cart.js';
 import {
   baseUrl
 } from "../../../services/http"
@@ -10,6 +12,7 @@ import {
 import {
   behavior
 } from "miniprogram-computed"
+const app = getApp();
 
 Page({
   behaviors: [behavior],
@@ -119,11 +122,29 @@ Page({
 
   clickAddCar() {
     if (this.data.currentSku.id) {
-      console.log(this.data.currentSku)
+      this.addSkusToCart()
     } else {
       this.showSkuSelectPopup()
     }
   },
+
+  async addSkusToCart() {
+    try {
+      const {
+        id
+      } = app.globalData.cart
+      const res = await addSkusToCartApi({
+        cartId: id,
+        sku: [{
+          skuId: this.data.currentSku.id,
+          skuNum: this.data.buyNum
+        }]
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  },
+
 
   showSkuSelectPopup() {
     this.setData({
@@ -198,6 +219,8 @@ Page({
     this.setData({
       buyNum,
       selectedSku
+    }, () => {
+      this.addSkusToCart()
     })
     this.closeSkuSelectPopup()
   },
