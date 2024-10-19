@@ -219,19 +219,22 @@ const changeGoodsState = async (goods: any, goodsStateId: number) => {
             goodsStateId,
             successMessage: true
           })
+          emit('getGoodsNum')
           searchGoods()
           // emit('deleteCategory', props.data.id)
         }
       }
     })
     return
+  } else {
+    await updateGoodsStateApi({
+      ...goods,
+      goodsStateId,
+      successMessage: true
+    })
+    searchGoods()
+    emit('getGoodsNum')
   }
-  await updateGoodsStateApi({
-    ...goods,
-    goodsStateId,
-    successMessage: true
-  })
-  searchGoods()
 }
 
 async function searchGoods() {
