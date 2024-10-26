@@ -327,7 +327,7 @@ const formBox3 = reactive<FormBox3>({
 const formBox3Rules = reactive<FormRules<FormBox3>>({
   goodsSku: [{ required: true, message: '请检查规格', trigger: ['blur', 'change'] }]
 })
-console.log(1)
+console.log(21)
 const addSku = () => {
   const allAuthorityList = computed<Authority[]>(globalDataState.allAuthorityList.bind({ $store }))
   const priceAuthorityArr = allAuthorityList.value.filter(
