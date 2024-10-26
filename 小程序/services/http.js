@@ -10,6 +10,7 @@ module.exports = {
     }
     console.log("请求url:", url, "----------", "请求参数:", data);
     return new Promise((resolve, reject) => {
+      const filterParams = Object.fromEntries(Object.entries(data).filter(([key, val]) => key !== 'successMessage'))
       wx.request({
         url: fullUrl,
         method: methodType,
@@ -17,11 +18,15 @@ module.exports = {
           "content-type": "application/json", // 默认值
           token: token,
         },
-        data,
+        data: filterParams,
         success(res) {
           console.log("请求结果:", res.data);
           if (res.data.code == 0) {
             resolve(res.data.data);
+            data.successMessage && wx.showToast({
+              title: res.data.msg,
+              icon: "success",
+            });
             wx.hideLoading();
           } else {
             reject(res.data);

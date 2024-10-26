@@ -108,7 +108,6 @@
     <el-form
       ref="ruleFormRef3"
       :model="formBox3"
-      :rules="formBox3Rules"
       label-width="auto"
       class="demo-ruleForm"
       status-icon
@@ -424,16 +423,16 @@ const emit = defineEmits(['getGoodsNum'])
 
 // GOODS PARAMS start
 const addParamsDialogVisible = ref(false)
-onMounted(() => {
-  const localGoodsParamsList: Array<GoodsPara> = storage.getItem('goodsPara')
-  if (!localGoodsParamsList) {
-    return
-  }
-  if (id.value) {
-    return
-  }
-  formBox2.goodsPara = [...localGoodsParamsList]
-})
+// onMounted(() => {
+//   const localGoodsParamsList: Array<GoodsPara> = storage.getItem('goodsPara')
+//   if (!localGoodsParamsList) {
+//     return
+//   }
+//   if (id.value) {
+//     return
+//   }
+//   formBox2.goodsPara = [...localGoodsParamsList]
+// })
 const addGoodsParams = (paramsName: string) => {
   const hasName = formBox2.goodsPara.filter((p: GoodsPara) => {
     return p.name === paramsName
@@ -514,6 +513,31 @@ const addGoods = async (
     }
     console.log(params, 'formBox')
     const API = id.value ? updateGoodsApi : addGoodsApi
+    console.log({
+      successMessage: true,
+      ...params,
+      goodsBanners: params.goodsBanners.map((banner: any, index: number) => ({
+        url: banner.response ? banner.response.data.url : banner.url.replace(baseURL + '/', ''),
+        name: banner.name,
+        sort: index + 1,
+        id: banner.response ? banner.response.data.id : banner.id
+      })),
+      goodsDetails: params.goodsDetails.map((detail: any, index: number) => ({
+        url: detail.response ? detail.response.data.url : detail.url.replace(baseURL + '/', ''),
+        name: detail.name,
+        sort: index + 1,
+        id: detail.response ? detail.response.data.id : detail.id
+      })),
+      goodsTags: params.goodsTags.map((tagId: number, index) => {
+        const currentTagIndex = goodsTagList.value.findIndex((tag) => tag.id === tagId)
+        const currentTag = goodsTagList.value[currentTagIndex]
+        return currentTag
+      }),
+      goodsSku: params.goodsSku.map((sku: GoodsSku) => ({
+        ...sku,
+        goodsName: formBox2.name
+      }))
+    })
     const res: any = await API({
       successMessage: true,
       ...params,
@@ -539,18 +563,19 @@ const addGoods = async (
         goodsName: formBox2.name
       }))
     })
+
     if (res.code === 0) {
-      !id.value && storage.removeItem('goodsPara')
-      if (route.query.draftId) {
-        const localDraftList: Array<any> = storage.getItem('localDraftList')
-        if (localDraftList) {
-          const index = localDraftList.findIndex((draft) => draft.draftId == route.query.draftId)
-          localDraftList.splice(index, 1)
-          storage.setItem('localDraftList', localDraftList)
-        }
-      }
+      // !id.value && storage.removeItem('goodsPara')
+      // if (route.query.draftId) {
+      //   const localDraftList: Array<any> = storage.getItem('localDraftList')
+      //   if (localDraftList) {
+      //     const index = localDraftList.findIndex((draft) => draft.draftId == route.query.draftId)
+      //     localDraftList.splice(index, 1)
+      //     storage.setItem('localDraftList', localDraftList)
+      //   }
+      // }
       emit('getGoodsNum')
-        goBack()
+      goBack()
     }
   } catch (error) {
     console.error(error)

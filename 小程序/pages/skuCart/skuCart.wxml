@@ -1,0 +1,7 @@
+<view class="goods-sku-info" wx:for="{{cart.orderSku}}" wx:for-item="sku" wx:for-index="skIndex" wx:key="skIndex">
+  <sku-card sku="{{sku}}" bind:openChangeSkuPopup='openChangeSkuPopup' catchclick="goGoodsDetail" bind:deleteSkuFormCar='deleteSkuFormCar'>
+    <view slot="thumb-cover" class="no-storage-mask" wx:if="{{sku.sku.kuCun <=0}}">
+      <view class="no-storage-content">无货</view>
+    </view>
+  </sku-card>
+</view>

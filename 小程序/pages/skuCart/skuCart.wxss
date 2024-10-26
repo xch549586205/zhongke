@@ -1,0 +1,25 @@
+/* pages/skuCart/skuCart.wxss */
+page {
+  background: #F5F5F5;
+}
+
+.goods-sku-info {
+  margin: 16rpx 32rpx;
+}
+
+.t-swipe-cell__right {
+  background: #E34747;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  border-top-right-radius: 24rpx;
+  border-bottom-right-radius: 24rpx;
+}
+
+.t-swipe-cell__right .delete-btn text {
+  font-family: AlibabaPuHuiTi_3_55_Regular;
+  font-weight: 400;
+  font-size: 32rpx;
+  color: #FFFFFF;
+  letter-spacing: 0;
+}

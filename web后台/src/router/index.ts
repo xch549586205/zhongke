@@ -2,6 +2,12 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { h, resolveComponent } from 'vue'
 export const routes = [
   {
+    hide: true,
+    path: '/',
+    redirect: '/goodsMng/myGoods/onSale?page=1',
+    component: () => import('../views/login/index.vue')
+  },
+  {
     path: '/login',
     name: 'login',
     hide: true,
@@ -111,10 +117,10 @@ export const routes = [
         component: () => import('../views/userMng/userList/index.vue')
       },
       {
-        path: '/userMng/distributionList',
+        path: '/userMng/dealerUserList',
         name: '下级分销',
         query: { page: 1 },
-        component: () => import('../views/userMng/userList/index.vue')
+        component: () => import('../views/userMng/dealerUser/index.vue')
       }
     ]
   }

@@ -1,5 +1,7 @@
 Component({
-  data: { icon: 'cart' },
+  data: {
+    icon: 'cart'
+  },
 
   properties: {
     count: {
@@ -10,7 +12,7 @@ Component({
   methods: {
     goToCart() {
       wx.switchTab({
-        url: '/pages/cart/index',
+        url: '/pages/skuCart/skuCart',
       });
     },
   },

@@ -10,7 +10,7 @@
     "buy-bar": "./components/buy-bar/index",
     "t-button": "tdesign-miniprogram/button/button",
     "t-icon": "tdesign-miniprogram/icon/icon",
-    "goods-specs-popup": "./components/goods-specs-popup/index",
+    "goods-specs-popup": "../../../components/goods-specs-popup",
     "goods-param-popup": "./components/goods-param-popup/index",
     "t-popup": "tdesign-miniprogram/popup/popup",
     "price": "/components/price/index"

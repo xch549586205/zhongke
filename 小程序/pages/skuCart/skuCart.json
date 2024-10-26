@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "sku-card": "./components/sku-card/index",
+    "goods-specs-popup": "../../components/goods-specs-popup"
+  },
+  "backgroundColor": "#F5F5F5"
+}

@@ -154,7 +154,7 @@ Page({
 
   handleCartTap() {
     wx.switchTab({
-      url: '/pages/cart/index',
+      url: '/pages/skuCart/skuCart',
     });
   },
 

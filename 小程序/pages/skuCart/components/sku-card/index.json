@@ -1,0 +1,11 @@
+{
+  "component": true,
+  "usingComponents": {
+    "t-tag": "tdesign-miniprogram/tag/tag",
+    "t-image": "/components/webp-image/index",
+    "t-stepper": "tdesign-miniprogram/stepper/stepper",
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-radio": "tdesign-miniprogram/radio/radio",
+    "t-swipe-cell": "tdesign-miniprogram/swipe-cell/swipe-cell"
+  }
+}

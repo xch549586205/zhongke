@@ -7,3 +7,6 @@ export const addUser = (params = {}) => post('/user/register', params)
 export const editUser = (params = {}) => post('/user/setUserInfo', params)
 export const deleteUser = (params = {}) => post('/user/deleteUser', params)
 export const changePassword = (params = {}) => post('/user/changePassword', params)
+
+export const getApplyListApi = (params = {}) => post('/apply/getApplyList', params)
+export const approveApplyApi = (params = {}) => post('/apply/approveApply', params)

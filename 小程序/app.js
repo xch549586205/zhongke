@@ -28,6 +28,7 @@ App({
         id: userInfo.cartId
       })
       this.globalData.cart = res.data
+      return res.data
     } catch (error) {
       console.error(error)
     }
@@ -65,5 +66,6 @@ App({
   globalData: {
     userInfo: null,
     token: "",
+    cart: {}
   },
 });

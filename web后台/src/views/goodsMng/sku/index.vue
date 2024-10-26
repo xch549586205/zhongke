@@ -7,6 +7,7 @@
   />
   <div style="display: flex">
     <Screen :key="screenKey" />
+    <el-button type="primary" @click="_resetScreen">重置</el-button>
   </div>
   <el-table v-loading="loading" :data="goodsList" :row-style="{ height: '50px' }">
     <el-table-column type="index" label="序号" width="80">
@@ -18,6 +19,7 @@
     </el-table-column>
     <el-table-column prop="goodsName" label="商品名称" />
     <el-table-column prop="goodsId" label="商品ID" />
+    <el-table-column prop="specName" label="SKU名称" />
     <el-table-column prop="id" label="SKU编码" />
     <el-table-column prop="specName" label="销售规格" />
     <el-table-column prop="goodsTypeId" label="商品状态">
@@ -56,20 +58,21 @@ import Screen from './screen.vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { baseURL } from '@/api/http'
 import type { Action } from 'element-plus'
-import { useStore, mapState } from 'vuex'
+import { useStore, mapState, mapMutations } from 'vuex'
 import editKuCunDialog from './editKuCunDialog.vue'
 
-const $store = useStore()
 const router = useRouter()
 const route = useRoute()
 
 const loading = ref(true)
+const $store = useStore()
 
 let obj = mapState('skuMng', ['screen'])
 let screen: any = computed(obj.screen.bind({ $store }))
 
 const screenKey = computed(() => route.path)
 
+const { resetScreen } = mapMutations('skuMng', ['resetScreen'])
 watch(
   () => route.query,
   (val: any) => {
@@ -143,21 +146,36 @@ interface GoodsType {
 const globalDataState = mapState('globalData', ['goodsTypeList'])
 const goodsTypeList = computed<GoodsType[]>(globalDataState.goodsTypeList.bind({ $store }))
 
+const _resetScreen = () => {
+  resetScreen.bind({ $store })()
+}
 async function getGoodsSkuList() {
   loading.value = true
 
   try {
-    const { name, id, goodsTypeId } = screen.value
+    const { specName, id, goodsTypeId, goodsName, goodsId, goodsStateId } = screen.value
     interface Screen {
       goodsTypeId?: number
-      name?: string
-      id?: string
+      specName?: string
+      goodsName?: string
+      id?: number
+      goodsId?: number
+      goodsStateId?: number
     }
     const screenParams: Screen = {}
-    if (name !== '') {
-      screenParams.name = name
+    if (goodsId) {
+      screenParams.goodsId = goodsId * 1
     }
-    if (id !== '') {
+    if (goodsStateId) {
+      screenParams.goodsStateId = goodsStateId * 1
+    }
+    if (specName !== '') {
+      screenParams.specName = specName
+    }
+    if (goodsName !== '') {
+      screenParams.goodsName = goodsName
+    }
+    if (id) {
       screenParams.id = id
     }
     if (goodsTypeId) {

@@ -35,7 +35,7 @@ Page({
       },
       {
         title: '购物车',
-        url: '/pages/cart/index',
+        url: '/pages/skuCart/skuCart',
         iconName: 'cart',
         showCartNum: true,
       },

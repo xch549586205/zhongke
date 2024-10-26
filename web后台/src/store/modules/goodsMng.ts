@@ -32,6 +32,13 @@ export default {
     },
     updateAllGoodsTagList(state: State, payload: { goodsTagList: Array<GoodsTag> }) {
       state.goodsTagList = payload.goodsTagList
+    },
+    resetScreen(state: State, payload) {
+      state.screen = {
+        goodsTypeId: null,
+        name: '',
+        id: null
+      }
     }
   },
   actions: {

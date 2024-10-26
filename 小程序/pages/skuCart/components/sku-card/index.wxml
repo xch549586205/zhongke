@@ -1,0 +1,30 @@
+<t-swipe-cell right="{{right}}" bind:click="onDeleteClick">
+  <view class="skuItem">
+    <view class="selectWrap">
+      <view class="select">
+      </view>
+    </view>
+    <view class="pic">
+      <t-image src="{{sku.thumb}}" />
+    </view>
+    <view class="content">
+      <view class="title">
+        {{sku.goodsName}}
+      </view>
+      <view class="skuSpecWrap">
+        <view class="skuSpec" bind:tap="specClick">
+          <span class="skuSpecText">{{sku.skuName}}</span>
+          <t-icon style="opacity: 0.4;" name="chevron-down-s" size="40rpx" data-name="{{item}}" color='#333333' />
+        </view>
+      </view>
+
+      <view class="priceAndCount">
+        <view class="price">¥{{sku.price}}</view>
+        <view class="count">
+          <t-stepper defaultValue="{{sku.skuNum}}" theme="filled" min="1" max="999" />
+        </view>
+      </view>
+
+    </view>
+  </view>
+</t-swipe-cell>

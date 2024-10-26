@@ -69,6 +69,14 @@ onMounted(() => {
   id.value = screen.value.id
   name.value = screen.value.name
 })
+watch(
+  () => screen.value,
+  (newValue, oldValue) => {
+    id.value = newValue.id
+    name.value = newValue.name
+  },
+  { deep: true }
+)
 </script>
 
 <style lang="less" scoped>

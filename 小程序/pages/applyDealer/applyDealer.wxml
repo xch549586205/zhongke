@@ -1,0 +1,10 @@
+<t-toast id="t-toast" />
+<view>
+  <view style="font-weight: 400;font-size: 28rpx;padding: 32rpx;color: #111111;"> 中科数驱邀请您，填写相关资料</view>
+  <view>
+    <t-input bindchange="onInputChange" data-key='companyName' placeholder="填写公司名称" value="{{companyName}}" />
+    <t-input bindchange="onInputChange" data-key='contactName' placeholder="填写联系人" value="{{contactName}}" />
+    <t-input bindchange="onInputChange" data-key='contactPhone' placeholder="填写联系电话" value="{{contactPhone}}" />
+  </view>
+  <view class="submit" bind:tap="submit">提交</view>
+</view>

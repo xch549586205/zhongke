@@ -79,10 +79,6 @@ ComponentWithComputed({
 
   methods: {
 
-
-
-
-
     handlePopupHide() {
       this.triggerEvent('closeSkuSelectPopup', {
         show: false,

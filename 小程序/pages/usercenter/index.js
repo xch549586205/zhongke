@@ -1,6 +1,3 @@
-import {
-  fetchUserCenter
-} from '../../services/usercenter/fetchUsercenter';
 import Toast from 'tdesign-miniprogram/toast/index';
 
 const menuData = [
@@ -15,6 +12,11 @@ const menuData = [
       tit: '',
       url: '',
       type: 'coupon',
+    }, {
+      title: '邀请合作伙伴',
+      tit: '',
+      url: '/pages/applyDealer/applyDealer',
+      type: 'applyDealer',
     },
     {
       title: '积分',
@@ -158,6 +160,12 @@ Page({
       case 'coupon': {
         wx.navigateTo({
           url: '/pages/coupon/coupon-list/index'
+        });
+        break;
+      }
+      case 'applyDealer': {
+        wx.navigateTo({
+          url: '/pages/applyDealer/applyDealer'
         });
         break;
       }

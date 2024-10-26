@@ -1,14 +1,42 @@
 <template>
   <div class="screen" :key="JSON.stringify(screen)">
     <el-input
-      v-model="name"
+      v-model="goodsName"
       placeholder="输入商品名称搜索"
       class="input-with-select"
       style="width: 200px"
     >
       <template #append>
         <el-button
-          @click="_updateScreen('name', name)"
+          @click="_updateScreen('goodsName', goodsName)"
+          style="background: var(--el-color-primary)"
+          :icon="Search"
+        />
+      </template>
+    </el-input>
+    <el-input
+      v-model="goodsId"
+      placeholder="输入商品ID搜索"
+      class="input-with-select"
+      style="width: 200px"
+    >
+      <template #append>
+        <el-button
+          @click="_updateScreen('goodsId', goodsId)"
+          style="background: var(--el-color-primary)"
+          :icon="Search"
+        />
+      </template>
+    </el-input>
+    <el-input
+      v-model="specName"
+      placeholder="输入SKU 名称搜索"
+      class="input-with-select"
+      style="width: 200px"
+    >
+      <template #append>
+        <el-button
+          @click="_updateScreen('specName', specName)"
           style="background: var(--el-color-primary)"
           :icon="Search"
         />
@@ -16,7 +44,7 @@
     </el-input>
     <el-input
       v-model.number="id"
-      placeholder="输入商品ID搜索"
+      placeholder="输入SKU 编码搜索"
       class="input-with-select"
       style="width: 200px"
     >
@@ -28,14 +56,17 @@
         />
       </template>
     </el-input>
-    <el-select v-model="screen.goodsTypeId" placeholder="选择商品分类" style="width: 200px">
-      <el-option :key="'allGoodsTypeList'" label="全部分类" :value="null" />
-      <el-option
-        v-for="item in goodsTypeList"
-        :key="item.name + 'goodsTypeList'"
-        :label="item.name"
-        :value="item.id"
-      />
+    <el-select
+      v-model="screen.goodsStateId"
+      filterable
+      class="m-2"
+      placeholder="商品状态"
+      size="large"
+      clearable
+      style="width: 200px; margin-left: 15px"
+    >
+      <el-option label="上架" :value="1" />
+      <el-option label="下架" :value="2" />
     </el-select>
   </div>
 </template>
@@ -44,31 +75,38 @@
 import { Search } from '@element-plus/icons-vue'
 import { watch, ref, onMounted, reactive, computed } from 'vue'
 import { useStore, mapState, mapMutations } from 'vuex'
-const globalDataState = mapState('globalData', ['allAuthorityList', 'goodsTypeList'])
 import moment from 'moment'
 const $store = useStore()
 
-interface GoodsType {
-  name: string
-  id: string
-}
-const goodsTypeList = computed<GoodsType[]>(globalDataState.goodsTypeList.bind({ $store }))
-
-const obj = mapState('goodsMng', ['screen'])
+const obj = mapState('skuMng', ['screen'])
 const screen: any = computed(obj.screen.bind({ $store }))
 
-const { updateScreen } = mapMutations('goodsMng', ['updateScreen'])
+const { updateScreen } = mapMutations('skuMng', ['updateScreen'])
 
-function _updateScreen(key: string, value: string) {
+function _updateScreen(key: string, value: string | null | number) {
   updateScreen.bind({ $store })({ key, value })
 }
 
-const name = ref('')
-const id = ref('')
+const goodsName = ref('')
+const specName = ref('')
+const id = ref(null)
+const goodsId = ref<number | null>(null)
 onMounted(() => {
   id.value = screen.value.id
-  name.value = screen.value.name
+  goodsName.value = screen.value.goodsName
+  goodsId.value = screen.value.goodsId
+  specName.value = screen.value.specName
 })
+watch(
+  () => screen.value,
+  (newValue, oldValue) => {
+    id.value = newValue.id
+    goodsName.value = newValue.goodsName
+    goodsId.value = newValue.goodsId
+    specName.value = newValue.specName
+  },
+  { deep: true }
+)
 </script>
 
 <style lang="less" scoped>

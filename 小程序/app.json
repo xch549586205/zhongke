@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/home/home",
+    "pages/skuCart/skuCart",
     "pages/category/category/category",
     "pages/category/search/index",
     "pages/usercenter/index",
@@ -12,7 +13,6 @@
     "pages/goods/category/index",
     "pages/goods/search/index",
     "pages/goods/result/index",
-    "pages/cart/index",
     "pages/order/order-confirm/index",
     "pages/order/receipt/index",
     "pages/order/pay-result/index",
@@ -35,7 +35,8 @@
     "pages/category/goodsDetail/goodsDetail",
     "pages/skuList/skuList",
     "pages/goodsList/goodsList",
-    "pages/login/login"
+    "pages/login/login",
+    "pages/applyDealer/applyDealer"
   ],
   "tabBar": {
     "custom": true,
@@ -49,7 +50,7 @@
         "text": "首页"
       },
       {
-        "pagePath": "pages/cart/index",
+        "pagePath": "pages/skuCart/skuCart",
         "text": "购物车"
       },
       {

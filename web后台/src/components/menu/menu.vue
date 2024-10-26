@@ -1,5 +1,5 @@
 <template>
-  <div style="padding-left: 24px; line-height: 40px; color: #fff">导航</div>
+  <!-- <div style="padding-left: 24px; line-height: 40px; color: #fff">导航</div> -->
   <el-menu
     router
     active-text-color="#ffffff"

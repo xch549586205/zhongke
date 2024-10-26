@@ -1,0 +1,90 @@
+.t-swipe-cell__right .delete-btn {
+  background-color: #e34d59;
+}
+
+.skuItem {
+  background: #FFFFFF;
+  display: flex;
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 48rpx 0;
+}
+
+.selectWrap {
+  display: flex;
+  width: 104rpx;
+  align-items: center;
+  justify-content: center;
+}
+
+.select {
+  width: 40rpx;
+  height: 40rpx;
+  border: 2rpx solid #C7C7C7;
+  border-radius: 50%;
+}
+
+.pic image {
+  width: 176rpx;
+  border-radius: 24rpx;
+  height: 176rpx;
+  margin-right: 32rpx;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding-right: 24rpx;
+}
+
+.title {
+  font-family: PingFangSC-Medium;
+  font-weight: 500;
+  font-size: 28rpx;
+  color: #111111;
+  letter-spacing: 0;
+}
+
+.skuSpecWrap {
+  display: flex;
+}
+
+.skuSpec {
+  margin-top: 14rpx;
+  font-family: PingFangSC-Regular;
+  font-weight: 400;
+  font-size: 24rpx;
+  color: #111111;
+  max-width: 265rpx;
+  background: #F2F2F2;
+  border-radius: 16rpx;
+  padding: 0 14rpx;
+  line-height: 40rpx;
+  display: flex;
+}
+
+.skuSpecText {
+  line-height: 40rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.priceAndCount {
+  margin-top: auto;
+  display: flex;
+}
+
+.price {
+  line-height: 50rpx;
+  font-family: PingFangSC-SNaNrpxibold;
+  font-weight: 600;
+  font-size: 36rpx;
+  color: #F2270C;
+  letter-spacing: 0;
+}
+
+.count {
+  margin-left: auto;
+}

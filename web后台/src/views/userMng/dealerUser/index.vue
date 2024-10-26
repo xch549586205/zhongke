@@ -51,19 +51,6 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="上级分销商" prop="distributorUserId" v-if="ruleForm.authorityId == '5'">
-        <el-select v-model="ruleForm.distributorUserId" placeholder="请选择上级分销商">
-          <el-option
-            v-for="item in distributorUserList"
-            :key="item.id + 'distributorUser'"
-            :label="`${item.userName}（${item.phoneNumber}）`"
-            :value="item.id"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="公司名称" prop="companyName" v-if="ruleForm.authorityId == '5'">
-        <el-input v-model="ruleForm.companyName" />
-      </el-form-item>
 
       <el-form-item label="手机号" prop="phoneNumber">
         <el-input v-model="ruleForm.phoneNumber" />
@@ -80,21 +67,13 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="addOrEditUserDialogVisible.show = false">取消</el-button>
-        <el-button type="primary" @click="submit(ruleFormRef)"> 确定 </el-button>
+        <el-button type="primary" @click="addOrEditUser(ruleFormRef)"> 确定 </el-button>
       </span>
     </template>
   </el-dialog>
 
   <div style="display: flex">
     <Screen />
-    <el-button
-      style="width: 88px; color: #fff; margin-left: 15px"
-      color="rgb(251, 113, 46)"
-      type="primary"
-      @click="(addOrEditUserDialogVisible.show = true), (addOrEditUserDialogVisible.userInfo = {})"
-    >
-      添加用户
-    </el-button>
   </div>
   <el-table v-loading="loading" :data="userList" :row-style="{ height: '50px' }">
     <el-table-column type="index" label="序号" width="80">
@@ -104,8 +83,6 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column prop="userName" label="用户名" />
-    <el-table-column prop="phoneNumber" label="手机号" />
     <el-table-column prop="authorityId" label="角色">
       <template #default="scope">
         <div>
@@ -119,16 +96,18 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column prop="authorityId" label="编辑">
+    <el-table-column prop="userName" label="用户名" />
+    <el-table-column prop="phoneNumber" label="手机号" />
+    <el-table-column prop="companyName" label="公司名称" />
+    <el-table-column prop="contactName" label="联系人" />
+    <el-table-column prop="contactPhone" label="联系电话" />
+    <el-table-column prop="state" label="状态" />
+
+    <el-table-column prop="" label="编辑">
       <template #default="scope">
-        <div style="display: flex">
-          <el-button type="primary" @click="edit(scope.row)">编辑 </el-button>
-          <!-- <el-button type="primary" @click="_changePassword(scope.row)">修改密码 </el-button> -->
-          <el-button
-            type="danger"
-            @click="deleteDiaLogVisible = { show: true, userInfo: scope.row }"
-            >删除
-          </el-button>
+        <div style="display: flex" v-if="scope.row.state === '已申请'">
+          <el-button type="primary" @click="agree(scope.row, true)">同意 </el-button>
+          <el-button @click="agree(scope.row, false)" type="danger">驳回 </el-button>
         </div>
       </template>
     </el-table-column>
@@ -150,13 +129,21 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted, watchEffect, computed, watch } from 'vue'
 import md5 from 'js-md5'
-import { getUserList, addUser, editUser, deleteUser, changePassword } from '@/api/user.ts'
+import {
+  approveApplyApi,
+  getApplyListApi,
+  addUser,
+  editUser,
+  deleteUser,
+  changePassword
+} from '@/api/user.ts'
 import moment from 'moment'
 import { useRouter, useRoute } from 'vue-router'
 import Screen from './screen.vue'
-import { ElMessage } from 'element-plus'
+import type { Action } from 'element-plus'
 import { useStore, mapState } from 'vuex'
 import type { FormInstance, FormRules } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 //router
 const $store = useStore()
@@ -164,12 +151,18 @@ const route = useRoute()
 const router = useRouter()
 
 //vuex
-let userState = mapState('userMng', ['screen'])
-let screen: any = computed(userState.screen.bind({ $store }))
+let userState = mapState('userMng', ['screen1'])
+let screen: any = computed(userState.screen1.bind({ $store }))
 const globalDataState = mapState('globalData', ['allAuthorityList'])
 interface Authority {
   authorityId: string
   authorityName: string
+}
+interface User {
+  id: string
+  authorityId: string
+  userName: string
+  phoneNumber: string
 }
 const allAuthorityList = computed<Authority[]>(
   globalDataState.allAuthorityList.bind({ $store }) || []
@@ -188,15 +181,7 @@ const changePasswordDialogVisible = ref<{ show: boolean; userInfo: any }>({
   show: false,
   userInfo: {}
 })
-interface User {
-  id: string
-  authorityId: string
-  userName: string
-  phoneNumber: string
-}
-const distributorUserList = ref<User[]>([])
-const userList = ref<User[]>([])
-
+const userList = ref([])
 interface pagination_type {
   currentPage: number
   pageSize: number
@@ -213,12 +198,7 @@ interface RuleForm {
   userName: string
   newPassword?: string
   phoneNumber: string
-  distributorUserId?: string
-  companyName?: string
-  contactName?: string
-  contactPhone?: string
 }
-
 const ruleFormRef = ref<FormInstance>()
 const ruleForm = reactive<RuleForm>({
   authorityId: '',
@@ -229,55 +209,42 @@ const ruleForm = reactive<RuleForm>({
 const isEdit = computed(() => {
   return Boolean(addOrEditUserDialogVisible.value.userInfo.id)
 })
-
-const rules = computed(() => {
-  return {
-    authorityId: [
-      {
-        required: true,
-        trigger: ['blur', 'change'],
-        message: '请选择角色'
-      }
-    ],
-    passWord: [
-      {
-        required: true,
-        trigger: ['blur', 'change'],
-        message: '请输入密码'
-      }
-    ],
-    newPassword: [
-      {
-        required: changePasswordDialogVisible.value.show,
-        trigger: ['blur', 'change'],
-        message: '请输入新密码'
-      }
-    ],
-    phoneNumber: [
-      {
-        required: true,
-        trigger: ['blur', 'change'],
-        message: '请输入手机号'
-      }
-    ],
-    userName: [
-      {
-        required: true,
-        trigger: ['blur', 'change'],
-        message: '请输入用户名'
-      }
-    ],
-    distributorUserId: {
-      required: ruleForm.authorityId === '5',
-      trigger: ['blur', 'change'],
-      message: '请选择一级经销商'
-    },
-    companyName: {
-      required: ruleForm.authorityId === '5',
-      trigger: ['blur', 'change'],
-      message: '请输入公司名称'
+const rules = reactive<FormRules>({
+  authorityId: [
+    {
+      required: true,
+      trigger: 'change',
+      message: '请选择角色'
     }
-  }
+  ],
+  passWord: [
+    {
+      required: true,
+      trigger: 'change',
+      message: '请输入密码'
+    }
+  ],
+  newPassword: [
+    {
+      required: true,
+      trigger: 'change',
+      message: '请输入新密码'
+    }
+  ],
+  phoneNumber: [
+    {
+      required: true,
+      trigger: 'change',
+      message: '请输入手机号'
+    }
+  ],
+  userName: [
+    {
+      required: true,
+      trigger: 'change',
+      message: '请输入用户名'
+    }
+  ]
 })
 
 //watch
@@ -315,22 +282,34 @@ watch(
   (newValue, oldValue) => {
     pagination.currentPage = 1
     router.push({
-      path: '/userMng',
+      path: '/userMng/dealerUserList',
       query: { page: 1, type: 'user' }
     })
   },
   { deep: true }
 )
 watchEffect(() => {
-  pagination.currentPage && _getUserList()
+  pagination.currentPage && _getApplyList()
 })
 
 onMounted(() => {
-  getDistributorUserList()
   pagination.currentPage = router.currentRoute.value.query.page * 1
 })
 
 //method
+
+const agree = async (user: User, agree: boolean) => {
+  ElMessageBox.alert(`通过申请吗？`, '申请确定', {
+    confirmButtonText: '确定',
+    callback: async (action: Action) => {
+      if (action === 'confirm') {
+        await approveApplyApi({ id: user.id, agree })
+        _getApplyList()
+      }
+    }
+  })
+}
+
 const _deleteUser = async () => {
   try {
     const res = await deleteUser({
@@ -341,7 +320,7 @@ const _deleteUser = async () => {
     if (res.code === 0) {
       ElMessage.success(res.msg)
       deleteDiaLogVisible.value.show = false
-      _getUserList()
+      _getApplyList()
     }
   } catch (error) {}
 }
@@ -384,60 +363,6 @@ const changePasswordHandle = async (formEl: FormInstance | undefined) => {
   })
 }
 
-const submit = async (formEl: FormInstance | undefined) => {
-  if (ruleForm.authorityId === '5') {
-    addOrEditDealerUser(formEl)
-  } else {
-    addOrEditUser(formEl)
-  }
-}
-const addOrEditDealerUser = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  await formEl.validate(async (valid, fields) => {
-    if (valid) {
-      try {
-        const API = isEdit.value ? editUser : addUser
-        const {
-          authorityId,
-          passWord,
-          phoneNumber,
-          userName,
-          distributorUserId,
-          companyName,
-          contactName,
-          contactPhone
-        } = ruleForm
-        const params: any = {
-          phoneNumber,
-          userName
-        }
-        // 添加用户
-        if (!isEdit.value) {
-          params.distributorUserId = distributorUserId
-          params.companyName = companyName
-          params.contactName = contactName
-          params.contactPhone = contactPhone
-          params.authorityId = authorityId
-          params.passWord = md5(passWord)
-        } else {
-          const currentUser: any = addOrEditUserDialogVisible.value.userInfo
-          params.uuid = currentUser.uuid
-          params.id = currentUser.id
-        }
-        const res: any = await API(params)
-        if (res.code === 0) {
-          ElMessage.success(res.msg)
-          await _getUserList()
-          addOrEditUserDialogVisible.value.show = false
-        }
-      } catch (error) {
-        console.error(error)
-      }
-    } else {
-      console.log('error submit!', fields)
-    }
-  })
-}
 const addOrEditUser = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(async (valid, fields) => {
@@ -458,10 +383,10 @@ const addOrEditUser = async (formEl: FormInstance | undefined) => {
           params.uuid = currentUser.uuid
           params.id = currentUser.id
         }
-        const res: any = await API(params)
+        const res = await API(params)
         if (res.code === 0) {
           ElMessage.success(res.msg)
-          await _getUserList()
+          await _getApplyList()
           addOrEditUserDialogVisible.value.show = false
         }
       } catch (error) {
@@ -485,49 +410,23 @@ function clear() {
   ruleForm.userName = ''
 }
 
-async function getDistributorUserList() {
+async function _getApplyList() {
   loading.value = true
   try {
-    const params = {
-      page: 1,
-      pageSize: 99999,
-      authorityId: '4'
-    }
-
-    const res: any = await getUserList({
-      ...params
-    })
-    if (!res.data.list) {
-      userList.value = []
-      return
-    }
-    let list = [...res.data.list]
-    distributorUserList.value = list
-    pagination.total = res.data.total
-  } catch (error) {
-    console.error(error)
-  } finally {
-    loading.value = false
-  }
-}
-
-async function _getUserList() {
-  loading.value = true
-  try {
-    const { authorityId } = screen.value
+    const { contactName } = screen.value
     interface Screen {
-      authorityId?: string
+      contactName?: string
     }
     const screenParams: Screen = {}
-    if (authorityId !== '') {
-      screenParams.authorityId = authorityId
+    if (contactName !== '') {
+      screenParams.contactName = contactName
     }
     const params = {
       page: pagination.currentPage,
       pageSize: pagination.pageSize
     }
 
-    const res: any = await getUserList({
+    const res: any = await getApplyListApi({
       ...params,
       ...screenParams
     })

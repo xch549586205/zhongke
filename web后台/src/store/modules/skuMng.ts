@@ -1,18 +1,16 @@
-import { getGoodsTagListApi } from '@/api/goods.ts'
-
 interface Screen {
   goodsTypeId: number | null
   name: string
+  specName: string
+  goodsId?: number | null
+  goodsName?: string | null
+  goodsStateId: number | null
   id: number | null
 }
 interface State {
   screen: Screen
-  goodsTagList: Array<GoodsTag>
 }
-interface GoodsTag {
-  sort: number
-  name: string
-}
+
 export default {
   namespaced: true,
   state: () =>
@@ -20,9 +18,12 @@ export default {
       screen: <Screen>{
         goodsTypeId: null,
         name: '',
-        id: null
-      },
-      goodsTagList: <Array<GoodsTag>>[]
+        id: null,
+        goodsId: null,
+        goodsName: '',
+        specName: '',
+        goodsStateId: null
+      }
     },
   mutations: {
     updateScreen(state: State, payload: { key: Screen; value: any }) {
@@ -30,8 +31,16 @@ export default {
       const { key, value } = payload
       state.screen[key] = value
     },
-    updateAllGoodsTagList(state: State, payload: { goodsTagList: Array<GoodsTag> }) {
-      state.goodsTagList = payload.goodsTagList
+    resetScreen(state: State, payload) {
+      state.screen = {
+        goodsTypeId: null,
+        name: '',
+        id: null,
+        goodsId: null,
+        goodsName: '',
+        specName: '',
+        goodsStateId: null
+      }
     }
   },
   actions: {},

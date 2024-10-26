@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "t-input": "tdesign-miniprogram/input/input",
+    "t-toast": "tdesign-miniprogram/toast/toast"
+  }
+}

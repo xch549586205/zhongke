@@ -1,7 +1,7 @@
 <template>
   <div style="display: flex">
     <Screen :key="screenKey" />
-    <el-button type="primary" @click="goGoodsDetail('')">重置</el-button>
+    <el-button type="primary" @click="_resetScreen">重置</el-button>
     <el-button type="primary" @click="goGoodsDetail('')">+发布商品</el-button>
   </div>
   <el-table v-loading="loading" :data="goodsList" :row-style="{ height: '50px' }">
@@ -78,7 +78,8 @@ import Screen from './screen.vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { baseURL } from '@/api/http'
 import type { Action } from 'element-plus'
-import { useStore, mapState } from 'vuex'
+import { useStore, mapState, mapMutations } from 'vuex'
+
 const emit = defineEmits(['getGoodsNum'])
 
 const $store = useStore()
@@ -88,7 +89,11 @@ const loading = ref(true)
 
 let obj = mapState('goodsMng', ['screen'])
 let screen: any = computed(obj.screen.bind({ $store }))
-
+const { resetScreen } = mapMutations('goodsMng', ['resetScreen'])
+console.log(resetScreen, 123)
+const _resetScreen = () => {
+  resetScreen.bind({ $store })()
+}
 const screenKey = computed(() => route.path)
 
 const goodsStateId = computed(() => {
@@ -198,7 +203,6 @@ const getGoodsTypeName = (goodsTypeId: string) => {
   if (!goodsTypeId) {
     return ''
   }
-  console.log(goodsTypeId)
   try {
     return goodsTypeList.value.filter((goodsType) => goodsType.id == goodsTypeId)[0].name
   } catch (error) {

@@ -16,10 +16,11 @@ Page({
 
   onLoad() {
     this.refreshData();
-  }, 
+  },
 
   refreshData() {
     this.getCartGroupData().then((res) => {
+      console.log(res, 'fetchCartGroupData()')
       let isEmpty = true;
       console.log(JSON.stringify(res.data))
       const cartGroupData = res.data;

@@ -11,7 +11,7 @@ export default [{
   {
     icon: 'cart',
     text: '购物车',
-    url: 'pages/cart/index',
+    url: 'pages/skuCart/skuCart',
   },
   {
     icon: 'person',

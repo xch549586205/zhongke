@@ -42,6 +42,10 @@ import { login, captcha } from '@/api/login'
 import md5 from 'js-md5'
 import type { FormInstance, FormRules } from 'element-plus'
 import { useRouter } from 'vue-router'
+import { useStore, mapState, mapMutations } from 'vuex'
+
+const { updateUserInfo } = mapMutations('userInfoMng', ['updateUserInfo'])
+const $store = useStore()
 
 const router = useRouter()
 const ruleFormRef = ref<FormInstance>()
@@ -107,9 +111,16 @@ const onSubmit = async (formEl: FormInstance | undefined) => {
         const { code, data } = res
         if (code === 0) {
           localStorage.setItem('token', data.token.access_token)
-          const { user } = data
-          console.log(user)
-          router.push('/goodsMng/myGoods/onSale?page=1')
+          localStorage.setItem('userName', data.userName)
+          localStorage.setItem('userId', data.id)
+          const userInfo = {
+            userName: data.userName,
+            userId: data.id
+          }
+          updateUserInfo.bind({ $store })(userInfo)
+          $store.dispatch('globalData/getGoodsTypeList')
+          $store.dispatch('globalData/getAllAuthorityList')
+          router.replace('/goodsMng/myGoods/onSale?page=1')
         }
       } catch (error) {
         console.error(error)
