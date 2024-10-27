@@ -20,6 +20,9 @@ Component({
   },
 
   methods: {
+    onSelectClick() {
+      this.triggerEvent('selectClick', this.data.sku.id);
+    },
     specClick() {
       this.triggerEvent('openChangeSkuPopup', {
         sku: this.data.sku
@@ -28,7 +31,15 @@ Component({
     onDeleteClick() {
       this.triggerEvent('deleteSkuFormCar', this.data.sku.id);
     },
-
+    handleSkuNumberChange(e) {
+      const {
+        value
+      } = e.detail;
+      this.triggerEvent('upateCartSkuNum', {
+        id: this.data.sku.id,
+        skuNum: value
+      });
+    },
 
 
 

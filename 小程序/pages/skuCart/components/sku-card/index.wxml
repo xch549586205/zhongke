@@ -1,7 +1,8 @@
 <t-swipe-cell right="{{right}}" bind:click="onDeleteClick">
   <view class="skuItem">
     <view class="selectWrap">
-      <view class="select">
+      <view class="select {{sku.selected?'ckeckedActive':''}}">
+        <t-icon name="check" color='#fff' size="40rpx" data-name="{{item}}" bind:click="onSelectClick" />
       </view>
     </view>
     <view class="pic">
@@ -21,7 +22,7 @@
       <view class="priceAndCount">
         <view class="price">¥{{sku.price}}</view>
         <view class="count">
-          <t-stepper defaultValue="{{sku.skuNum}}" theme="filled" min="1" max="999" />
+          <t-stepper bind:change="handleSkuNumberChange" value="{{sku.skuNum}}" theme="filled" min="1" max="999" />
         </view>
       </view>
 

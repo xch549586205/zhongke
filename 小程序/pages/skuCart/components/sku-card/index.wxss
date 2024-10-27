@@ -2,6 +2,17 @@
   background-color: #e34d59;
 }
 
+.check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ckeckedActive {
+  background: #e75137 !important;
+  border-color: #e75137 !important;
+}
+
 .skuItem {
   background: #FFFFFF;
   display: flex;

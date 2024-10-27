@@ -1,6 +1,8 @@
 {
   "usingComponents": {
     "sku-card": "./components/sku-card/index",
+    "cart-empty": "./components/cart-empty/index",
+    "cart-bar": "./components/cart-bar/index",
     "goods-specs-popup": "../../components/goods-specs-popup"
   },
   "backgroundColor": "#F5F5F5"

@@ -23,10 +23,12 @@ module.exports = {
           console.log("请求结果:", res.data);
           if (res.data.code == 0) {
             resolve(res.data.data);
-            data.successMessage && wx.showToast({
-              title: res.data.msg,
-              icon: "success",
-            });
+            if (data.successMessage) {
+              wx.showToast({
+                title: typeof data.successMessage === 'string' ? data.successMessage : res.data.msg,
+                icon: "success",
+              });
+            }
             wx.hideLoading();
           } else {
             reject(res.data);

@@ -4,19 +4,77 @@ import {
   baseUrl
 } from "../../services/http"
 import {
-  removeSkusFromCartApi
+  removeSkusFromCartApi,
+  upateCartSkuNumApi,
+  replaceCartSkuApi
 } from "../../services/cart"
 import {
   behavior
 } from "miniprogram-computed"
 Page({
   behaviors: [behavior],
-  computed: {},
+  computed: {
+    totalAmount(data) {
+      const userInfo = wx.getStorageSync("userInfo")
+      const {
+        authorityId
+      } = userInfo
+      const {
+        cart,
+        selectList
+      } = data
+      if (!cart.orderSku) {
+        return 0
+      }
+      let _totalAmount = 0
+      const selectedSkuList = cart.orderSku.filter(os => selectList.indexOf(os.id) !== -1)
+      selectedSkuList.map(sku => {
+        const {
+          skuId
+        } = sku
+        const {
+          skuPrice
+        } = sku.sku
+        const currentSkuPrice = skuPrice.filter(_sp => _sp.skuId === skuId && _sp.authorityId === authorityId)[0].price
+        _totalAmount += currentSkuPrice
+      })
+      return _totalAmount
+    },
+    skuList(data) {
+      const {
+        cart,
+        selectList
+      } = data
+      if (!cart.orderSku) {
+        return []
+      }
+      return cart.orderSku.map(sku => {
+        return {
+          ...sku,
+          selected: selectList.indexOf(sku.id) !== -1
+        }
+      })
+    },
+    isAllSelected(data) {
+      const {
+        cart,
+        selectList
+      } = data
+      if (!cart.orderSku) {
+        return false
+      }
+      return cart.orderSku.length === selectList.length
+    }
+  },
   /**
    * 页面的初始数据
    */
   data: {
-    cart: {}
+    isSpuSelectPopupShow: false,
+    cart: {},
+    changeSkuGoodsInfo: null,
+    skuNum: 0,
+    selectList: []
   },
 
   /**
@@ -37,15 +95,57 @@ Page({
    * 生命周期函数--监听页面显示
    */
   async onShow() {
+    await this.getCar()
     this.getTabBar().init();
-    this.getCar()
+  },
+  handleToSettle() {
+    
+  },
+
+
+  selectClick(e) {
+    const
+      id = e.detail
+    const {
+      selectList
+    } = this.data
+    const newSelectList = [...selectList]
+    const currentIdIndex = selectList.indexOf(id)
+    if (currentIdIndex === -1) {
+      newSelectList.push(id)
+    } else {
+      newSelectList.splice(currentIdIndex, 1)
+    }
+    this.setData({
+      selectList: newSelectList
+    })
+  },
+  selectAll(e) {
+    const {
+      isAllSelected
+    } = e.detail
+    if (!isAllSelected) {
+      this.setData({
+        selectList: this.data.cart.orderSku.map(sku => sku.id)
+      })
+    } else {
+      this.setData({
+        selectList: []
+      })
+    }
+
+  },
+  goCategory() {
+    wx.switchTab({
+      url: '/pages/category/category/category'
+    });
   },
   async getCar() {
-
     const cart = await app.getCartById()
     this.handleCart(cart)
-
   },
+
+
   handleCart(cart) {
     const userInfo = wx.getStorageSync("userInfo")
     const {
@@ -84,8 +184,65 @@ Page({
     const {
       sku
     } = e.detail
-    const zkGoods = sku.sku
+    const {
+      zkGoods
+    } = sku.sku
+    this.setData({
+      skuNum: sku.skuNum,
+      selectedSku: sku.skuId,
+      isSpuSelectPopupShow: true,
+      changeSkuGoodsInfo: {
+        ...zkGoods,
+        thumb: sku.thumb
+      }
+    });
     console.log(zkGoods)
+
+  },
+  async changeSkuConfirm(e) {
+    const {
+      buyNum,
+      selectedSku
+    } = e.detail
+    const userInfo = wx.getStorageSync("userInfo")
+    const {
+      cartId
+    } = userInfo
+    const res = await replaceCartSkuApi({
+      "destSkuId": selectedSku,
+      "destSkuNum": buyNum,
+      cartId,
+      sourceSkuId: this.data.selectedSku
+    })
+    app.globalData.cart = res.data
+    this.closeSkuSelectPopup()
+    this.handleCart(res.data)
+  },
+  closeSkuSelectPopup() {
+    this.setData({
+      isSpuSelectPopupShow: false,
+    });
+  },
+  async upateCartSkuNum(e) {
+    try {
+      const {
+        id,
+        skuNum
+      } = e.detail
+      const userInfo = wx.getStorageSync("userInfo")
+      const {
+        cartId
+      } = userInfo
+      const res = await upateCartSkuNumApi({
+        orderSkuId: id,
+        cartId,
+        skuNum
+      })
+      app.globalData.cart = res.data
+      this.handleCart(res.data)
+    } catch (error) {
+      this.getCar()
+    }
 
   },
   /**

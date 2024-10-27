@@ -1,7 +1,15 @@
-<view class="goods-sku-info" wx:for="{{cart.orderSku}}" wx:for-item="sku" wx:for-index="skIndex" wx:key="skIndex">
-  <sku-card sku="{{sku}}" bind:openChangeSkuPopup='openChangeSkuPopup' catchclick="goGoodsDetail" bind:deleteSkuFormCar='deleteSkuFormCar'>
+<view>
+  <cart-empty wx:if="{{!cart.orderSku || !cart.orderSku.length}}" btnText='去选购' bind:handleClick="goCategory" />
+</view>
+
+<view class="goods-sku-info" wx:for="{{skuList}}" wx:for-item="sku" wx:for-index="skIndex" wx:key="skIndex">
+
+  <sku-card sku="{{sku}}" bind:selectClick='selectClick' bind:upateCartSkuNum='upateCartSkuNum' bind:openChangeSkuPopup='openChangeSkuPopup' catchclick="goGoodsDetail" bind:deleteSkuFormCar='deleteSkuFormCar'>
     <view slot="thumb-cover" class="no-storage-mask" wx:if="{{sku.sku.kuCun <=0}}">
       <view class="no-storage-content">无货</view>
     </view>
   </sku-card>
 </view>
+<goods-specs-popup wx:if="{{isSpuSelectPopupShow}}" selectedSku="{{selectedSku}}" show="{{isSpuSelectPopupShow}}" goodsInfo='{{changeSkuGoodsInfo}}' image="{{changeSkuGoodsInfo.thumb}}" buyNum="{{skuNum}}" bind:closeSkuSelectPopup="closeSkuSelectPopup" bind:skuConfirm='changeSkuConfirm' bind:specsConfirm="specsConfirm">
+</goods-specs-popup>
+<cart-bar bind:handleToSettle="handleToSettle" totalAmount="{{totalAmount}}" totalGoodsNum="{{selectList.length}}" bind:handleSelectAll='selectAll' isAllSelected='{{isAllSelected}}' fixed wx:if="{{cart.orderSku && cart.orderSku.length}}" />

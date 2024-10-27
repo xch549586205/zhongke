@@ -1,9 +1,0 @@
-<view class="wrap">
-  <view class="search" bind:tap="navToSearchPage">
-    <t-search shape="round" placeholder="搜索商品" center leftIcon="" disabled>
-      <t-icon slot="left-icon" prefix="wr" name="search" size="40rpx" color="#bbb" />
-    </t-search>
-  </view>
-
-  <goods-category level="{{3}}" custom-class="goods-category-class" category="{{list}}" bind:changeCategory="onChange" />
-</view>
