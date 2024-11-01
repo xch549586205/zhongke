@@ -6,12 +6,13 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-
+history
 node_modules
 .DS_Store
 dist
 history
 history/
+/history
 dist-ssr
 coverage
 *.local
@@ -27,6 +28,7 @@ coverage
 *.ntvs*
 *.njsproj
 *.sln
+*.history
 *.sw?
 
 *.tsbuildinfo
