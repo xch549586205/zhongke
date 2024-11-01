@@ -26,7 +26,7 @@ module.exports = {
             if (data.successMessage) {
               wx.showToast({
                 title: typeof data.successMessage === 'string' ? data.successMessage : res.data.msg,
-                icon: "success",
+                icon: "none",
               });
             }
             wx.hideLoading();

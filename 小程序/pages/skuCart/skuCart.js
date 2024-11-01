@@ -1,8 +1,15 @@
 // pages/skuCart/skuCart.js
 const app = getApp();
 import {
+  getTotalAmount
+} from "@/utils/mydecimal.js"
+import {
   baseUrl
 } from "../../services/http"
+import {
+  newOrderApi,
+  addCartSkusToOrderApi
+} from "../../services/order"
 import {
   removeSkusFromCartApi,
   upateCartSkuNumApi,
@@ -15,35 +22,46 @@ Page({
   behaviors: [behavior],
   computed: {
     totalAmount(data) {
-      const userInfo = wx.getStorageSync("userInfo")
-      const {
-        authorityId
-      } = userInfo
       const {
         cart,
-        selectList
+        selectOrderList
       } = data
       if (!cart.orderSku) {
         return 0
       }
-      let _totalAmount = 0
-      const selectedSkuList = cart.orderSku.filter(os => selectList.indexOf(os.id) !== -1)
-      selectedSkuList.map(sku => {
-        const {
-          skuId
-        } = sku
-        const {
-          skuPrice
-        } = sku.sku
-        const currentSkuPrice = skuPrice.filter(_sp => _sp.skuId === skuId && _sp.authorityId === authorityId)[0].price
-        _totalAmount += currentSkuPrice
-      })
+      const selectedSkuList = cart.orderSku.filter(os => selectOrderList.indexOf(os.id) !== -1)
+      const _totalAmount = getTotalAmount(selectedSkuList)
       return _totalAmount
+    },
+    disabledToSettle(data) {
+
+      const {
+        selectOrderList,
+        cart
+      } = data
+      if (!cart.orderSku) {
+        return true
+      }
+      if (!selectOrderList.length) {
+        return true
+      }
+      let disabled = false
+      // 判断每一项的库存不足
+      cart.orderSku.forEach(item => {
+        const {
+          skuNum,
+          sku
+        } = item
+        if (skuNum > sku.kuCun) {
+          disabled = true
+        }
+      })
+      return disabled
     },
     skuList(data) {
       const {
         cart,
-        selectList
+        selectOrderList
       } = data
       if (!cart.orderSku) {
         return []
@@ -51,19 +69,19 @@ Page({
       return cart.orderSku.map(sku => {
         return {
           ...sku,
-          selected: selectList.indexOf(sku.id) !== -1
+          selected: selectOrderList.indexOf(sku.id) !== -1
         }
       })
     },
     isAllSelected(data) {
       const {
         cart,
-        selectList
+        selectOrderList
       } = data
       if (!cart.orderSku) {
         return false
       }
-      return cart.orderSku.length === selectList.length
+      return cart.orderSku.length === selectOrderList.length
     }
   },
   /**
@@ -74,7 +92,8 @@ Page({
     cart: {},
     changeSkuGoodsInfo: null,
     skuNum: 0,
-    selectList: []
+    selectOrderList: [],
+    orderSkuId: null
   },
 
   /**
@@ -94,12 +113,30 @@ Page({
   /**
    * 生命周期函数--监听页面显示
    */
-  async onShow() {
-    await this.getCar()
+  onShow() {
     this.getTabBar().init();
+    this.getCar()
   },
-  handleToSettle() {
-    
+  async handleToSettle() {
+    try {
+      const userInfo = wx.getStorageSync("userInfo")
+      const res = await newOrderApi({
+        userId: userInfo.id,
+      })
+      const {
+        id
+      } = res.data
+      await addCartSkusToOrderApi({
+        orderId: id,
+        cartId: userInfo.cartId,
+        skuIds: this.data.selectOrderList
+      })
+      wx.navigateTo({
+        url: '/pages/orderDetail/orderDetail?id=' + id
+      });
+    } catch (error) {
+      console.error(error)
+    }
   },
 
 
@@ -107,17 +144,17 @@ Page({
     const
       id = e.detail
     const {
-      selectList
+      selectOrderList
     } = this.data
-    const newSelectList = [...selectList]
-    const currentIdIndex = selectList.indexOf(id)
+    const newSelectList = [...selectOrderList]
+    const currentIdIndex = selectOrderList.indexOf(id)
     if (currentIdIndex === -1) {
       newSelectList.push(id)
     } else {
       newSelectList.splice(currentIdIndex, 1)
     }
     this.setData({
-      selectList: newSelectList
+      selectOrderList: newSelectList
     })
   },
   selectAll(e) {
@@ -126,11 +163,11 @@ Page({
     } = e.detail
     if (!isAllSelected) {
       this.setData({
-        selectList: this.data.cart.orderSku.map(sku => sku.id)
+        selectOrderList: this.data.cart.orderSku.map(sku => sku.id)
       })
     } else {
       this.setData({
-        selectList: []
+        selectOrderList: []
       })
     }
 
@@ -142,6 +179,7 @@ Page({
   },
   async getCar() {
     const cart = await app.getCartById()
+    console.log(cart)
     this.handleCart(cart)
   },
 
@@ -189,7 +227,8 @@ Page({
     } = sku.sku
     this.setData({
       skuNum: sku.skuNum,
-      selectedSku: sku.skuId,
+      orderSkuId: sku.id,
+      selectedSkuId: sku.skuId,
       isSpuSelectPopupShow: true,
       changeSkuGoodsInfo: {
         ...zkGoods,
@@ -202,21 +241,35 @@ Page({
   async changeSkuConfirm(e) {
     const {
       buyNum,
-      selectedSku
+      selectedSkuId
     } = e.detail
     const userInfo = wx.getStorageSync("userInfo")
     const {
       cartId
     } = userInfo
     const res = await replaceCartSkuApi({
-      "destSkuId": selectedSku,
+      "destSkuId": selectedSkuId,
       "destSkuNum": buyNum,
       cartId,
-      sourceSkuId: this.data.selectedSku
+      sourceSkuId: this.data.selectedSkuId
     })
+    try {
+      //这里orderId会变，所以要把旧选中orderId换成新的
+      const newSelectList = [...this.data.selectOrderList]
+      const selectIndex = this.data.selectOrderList.indexOf(this.data.orderSkuId)
+      if (selectIndex !== -1) {
+        newSelectList[selectIndex] = res.data.orderSku.filter(os => os.skuId === selectedSkuId)[0].id
+        this.setData({
+          selectOrderList: newSelectList
+        })
+      }
+    } catch (error) {
+      console.error(error)
+    }
     app.globalData.cart = res.data
     this.closeSkuSelectPopup()
     this.handleCart(res.data)
+
   },
   closeSkuSelectPopup() {
     this.setData({

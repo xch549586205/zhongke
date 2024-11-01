@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "order-card": "./components/order-card/index",
+    "specs-goods-card": "./components/specs-goods-card/index"
+  }
+}

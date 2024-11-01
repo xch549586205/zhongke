@@ -31,15 +31,21 @@ Component({
   ],
   methods: {
     onDelete(e) {
-      const { item } = e.currentTarget.dataset;
+      const {
+        item
+      } = e.currentTarget.dataset;
       this.triggerEvent('onDelete', item);
     },
     onSelect(e) {
-      const { item } = e.currentTarget.dataset;
+      const {
+        item
+      } = e.currentTarget.dataset;
       this.triggerEvent('onSelect', item);
     },
     onEdit(e) {
-      const { item } = e.currentTarget.dataset;
+      const {
+        item
+      } = e.currentTarget.dataset;
       this.triggerEvent('onEdit', item);
     },
   },

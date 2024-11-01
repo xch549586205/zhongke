@@ -61,6 +61,15 @@
   display: flex;
 }
 
+.goods_tips {
+  width: 100%;
+  margin-top: 4rpx;
+  color: #fa4126;
+  font-size: 24rpx;
+  line-height: 32rpx;
+  font-weight: bold;
+}
+
 .skuSpec {
   margin-top: 14rpx;
   font-family: PingFangSC-Regular;

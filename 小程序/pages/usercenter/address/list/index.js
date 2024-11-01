@@ -1,9 +1,17 @@
-/* eslint-disable no-param-reassign */
-import { fetchDeliveryAddressList } from '../../../../services/address/fetchAddress';
 import Toast from 'tdesign-miniprogram/toast/index';
-import { resolveAddress, rejectAddress } from './util';
-import { getAddressPromise } from '../edit/util';
-
+import {
+  resolveAddress,
+  rejectAddress
+} from './util';
+import {
+  getAddressPromise
+} from '../edit/util';
+import {
+  addUserAddrApi,
+  deleteUserAddrApi,
+  getUserAddrListApi
+} from "@/services/address"
+const app = getApp()
 Page({
   data: {
     addressList: [],
@@ -18,15 +26,20 @@ Page({
   hasSelect: false,
 
   onLoad(query) {
-    const { selectMode = '', isOrderSure = '', id = '' } = query;
-    this.setData({
-      isOrderSure: !!isOrderSure,
-      id,
-    });
-    this.selectMode = !!selectMode;
-    this.init();
+    // const {
+    //   selectMode = '', isOrderSure = '', id = ''
+    // } = query;
+    // this.setData({
+    //   isOrderSure: !!isOrderSure,
+    //   id,
+    // });
+    // this.selectMode = !!selectMode;
+    // this.init();
   },
+  onShow() {
+    this.init();
 
+  },
   init() {
     this.getAddressList();
   },
@@ -35,16 +48,32 @@ Page({
       rejectAddress();
     }
   },
-  getAddressList() {
-    const { id } = this.data;
-    fetchDeliveryAddressList().then((addressList) => {
-      addressList.forEach((address) => {
-        if (address.id === id) {
-          address.checked = true;
+
+  async getAddressList() {
+    const {
+      id
+    } = this.data;
+    const userInfo = wx.getStorageSync("userInfo")
+    const res = await getUserAddrListApi({
+      id: userInfo.id
+    })
+    app.globalData.userAddr = res.user.userAddr
+    this.setData({
+      addressList: res.user.userAddr.map(addr => {
+        return {
+          ...addr,
+          countryName: addr.country,
+          provinceName: addr.province,
+          cityName: addr.city,
+          districtName: addr.area,
+          isDefault: res.user.defaultAddrId === addr.id,
+          name: addr.userName,
+          phone: addr.phoneNumber,
+          address: `${ addr.province}${addr.city}${addr.area} ${addr.detail}`
         }
-      });
-      this.setData({ addressList });
-    });
+      })
+    })
+
   },
   getWXAddressHandle() {
     wx.chooseAddress({
@@ -66,7 +95,9 @@ Page({
           icon: '',
           duration: 1000,
         });
-        const { length: len } = this.data.addressList;
+        const {
+          length: len
+        } = this.data.addressList;
         this.setData({
           [`addressList[${len}]`]: {
             name: res.userName,
@@ -80,10 +111,17 @@ Page({
       },
     });
   },
-  confirmDeleteHandle({ detail }) {
-    const { id } = detail || {};
+  confirmDeleteHandle({
+    detail
+  }) {
+    const {
+      id
+    } = detail || {};
     if (id !== undefined) {
-      this.setData({ deleteID: id, showDeleteConfirm: true });
+      this.setData({
+        deleteID: id,
+        showDeleteConfirm: true
+      });
       Toast({
         context: this,
         selector: '#t-toast',
@@ -101,32 +139,52 @@ Page({
       });
     }
   },
-  deleteAddressHandle(e) {
-    const { id } = e.currentTarget.dataset;
+  async deleteAddressHandle(e) {
+    const {
+      id
+    } = e.currentTarget.dataset;
+    const userInfo = wx.getStorageSync("userInfo")
+    const res = await deleteUserAddrApi({
+      id,
+      userId: userInfo.id
+    })
+    this.getAddressList()
     this.setData({
-      addressList: this.data.addressList.filter((address) => address.id !== id),
       deleteID: '',
       showDeleteConfirm: false,
     });
   },
-  editAddressHandle({ detail }) {
-    this.waitForNewAddress();
-
-    const { id } = detail || {};
-    wx.navigateTo({ url: `/pages/usercenter/address/edit/index?id=${id}` });
+  editAddressHandle({
+    detail
+  }) {
+    // this.waitForNewAddress();
+    const {
+      id
+    } = detail || {};
+    wx.navigateTo({
+      url: `/pages/usercenter/address/edit/index?id=${id}`
+    });
   },
-  selectHandle({ detail }) {
+  selectHandle({
+    detail
+  }) {
     if (this.selectMode) {
       this.hasSelect = true;
       resolveAddress(detail);
-      wx.navigateBack({ delta: 1 });
+      wx.navigateBack({
+        delta: 1
+      });
     } else {
-      this.editAddressHandle({ detail });
+      this.editAddressHandle({
+        detail
+      });
     }
   },
   createHandle() {
     this.waitForNewAddress();
-    wx.navigateTo({ url: '/pages/usercenter/address/edit/index' });
+    wx.navigateTo({
+      url: '/pages/usercenter/address/edit/index'
+    });
   },
 
   waitForNewAddress() {

@@ -66,6 +66,7 @@ App({
   globalData: {
     userInfo: null,
     token: "",
-    cart: {}
+    cart: {},
+    userAddr: []
   },
 });

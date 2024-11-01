@@ -25,6 +25,7 @@
           <t-stepper bind:change="handleSkuNumberChange" value="{{sku.skuNum}}" theme="filled" min="1" max="999" />
         </view>
       </view>
+      <view class="goods_tips" wx:if="{{ sku.sku.kuCun < sku.skuNum}}">库存不足</view>
 
     </view>
   </view>

@@ -16,10 +16,10 @@ ComponentWithComputed({
     },
     selectedSkuInfo(data) {
       const {
-        selectedSku,
+        selectedSkuId,
         skuList
       } = data
-      return skuList.filter(sku => sku.id === selectedSku)[0] || {}
+      return skuList.filter(sku => sku.id === selectedSkuId)[0] || {}
     },
     selectedSkuPrice(data) {
       const {
@@ -34,11 +34,11 @@ ComponentWithComputed({
 
   },
   properties: {
-    selectedSku: {
+    selectedSkuId: {
       type: Number,
-      observer(selectedSku) {
+      observer(selectedSkuId) {
         this.setData({
-          selectedSku,
+          selectedSkuId,
         });
       },
     },
@@ -67,12 +67,12 @@ ComponentWithComputed({
 
 
   initStatus: false,
-  selectedSku: {},
+  selectedSkuId: {},
   selectSpecObj: {},
 
   data: {
     buyNum: 1,
-    selectedSku: '',
+    selectedSkuId: '',
     goodsInfo: {},
     authorityId: '4',
   },
@@ -88,7 +88,7 @@ ComponentWithComputed({
     skuConfirm() {
       this.triggerEvent('skuConfirm', {
         buyNum: this.data.buyNum,
-        selectedSku: this.data.selectedSku
+        selectedSkuId: this.data.selectedSkuId
       });
     },
 
@@ -106,7 +106,7 @@ ComponentWithComputed({
         id
       } = e.currentTarget.dataset
       this.setData({
-        selectedSku: id
+        selectedSkuId: id
       })
     },
 

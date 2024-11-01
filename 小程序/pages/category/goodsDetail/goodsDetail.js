@@ -41,7 +41,7 @@ Page({
       },
     ],
     buyNum: 1,
-    selectedSku: "",
+    selectedSkuId: "",
     goodsId: '',
     navigation: {
       type: 'fraction'
@@ -56,12 +56,12 @@ Page({
         goodsSku
       } = data.goodsInfo
       const {
-        selectedSku
+        selectedSkuId
       } = data
-      if (!goodsSku || !selectedSku) {
+      if (!goodsSku || !selectedSkuId) {
         return {}
       }
-      const sku = goodsSku.filter(sku => sku.id === selectedSku)[0] || {}
+      const sku = goodsSku.filter(sku => sku.id === selectedSkuId)[0] || {}
       if (!Object.keys(sku).length) {
         return {}
       }
@@ -131,8 +131,17 @@ Page({
   async addSkusToCart() {
     try {
       const {
-        id
+        id,
+        orderSku
       } = app.globalData.cart
+      if (orderSku.filter(os => os.skuId === this.data.currentSku.id).length) {
+        wx.showToast({
+          title: '该商品在购物车里已存在！',
+          duration: 2000,
+          icon: "none"
+        })
+        return
+      }
       const res = await addSkusToCartApi({
         cartId: id,
         sku: [{
@@ -214,11 +223,11 @@ Page({
   skuConfirm(e) {
     const {
       buyNum,
-      selectedSku
+      selectedSkuId
     } = e.detail
     this.setData({
       buyNum,
-      selectedSku
+      selectedSkuId
     }, () => {
       this.addSkusToCart()
     })

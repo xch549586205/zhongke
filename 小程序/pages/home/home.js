@@ -126,6 +126,9 @@ Page({
         page: 1,
         pageSize: 1000
       })
+      if (!res.list) {
+        return []
+      }
       this.setData({
         bannerList: res.list.map(banner => ({
           ...banner,
@@ -145,6 +148,9 @@ Page({
         page: 1,
         pageSize: 1000
       })
+      if (!res.list) {
+        return []
+      }
       this.setData({
         categoryList: res.list
       })
@@ -161,6 +167,9 @@ Page({
         page: 1,
         pageSize: 1000
       })
+      if (!res.list) {
+        return []
+      }
       this.setData({
         categoryContentList: res.list.map(categoryContent => ({
           ...categoryContent,
@@ -310,14 +319,4 @@ Page({
     });
   },
 
-  navToActivityDetail({
-    detail
-  }) {
-    const {
-      index: promotionID = 0
-    } = detail || {};
-    wx.navigateTo({
-      url: `/pages/promotion-detail/index?promotion_id=${promotionID}`,
-    });
-  },
 });

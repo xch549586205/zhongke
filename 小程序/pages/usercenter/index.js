@@ -198,7 +198,7 @@ Page({
 
   jumpAllOrder() {
     wx.navigateTo({
-      url: '/pages/order/order-list/index'
+      url: '/pages/orderList/orderList'
     });
   },
 

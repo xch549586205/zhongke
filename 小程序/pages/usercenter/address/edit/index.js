@@ -1,13 +1,31 @@
 import Toast from 'tdesign-miniprogram/toast/index';
-import { fetchDeliveryAddress } from '../../../../services/address/fetchAddress';
-import { areaData } from '../../../../config/index';
-import { resolveAddress, rejectAddress } from './util';
+import {
+  fetchDeliveryAddress
+} from '../../../../services/address/fetchAddress';
+import {
+  areaData
+} from '../../../../config/index';
+import {
+  resolveAddress,
+  rejectAddress,
+} from './util';
+import {
+  addUserAddrApi,
+  updateUserAddrApi,
+  setUserDefaultAddrApi,
+} from "@/services/address"
+const app = getApp()
 
 const innerPhoneReg = '^1(?:3\\d|4[4-9]|5[0-35-9]|6[67]|7[0-8]|8\\d|9\\d)\\d{8}$';
 const innerNameReg = '^[a-zA-Z\\d\\u4e00-\\u9fa5]+$';
-const labelsOptions = [
-  { id: 0, name: '家' },
-  { id: 1, name: '公司' },
+const labelsOptions = [{
+    id: 0,
+    name: '家'
+  },
+  {
+    id: 1,
+    name: '公司'
+  },
 ];
 
 Page({
@@ -16,6 +34,7 @@ Page({
   },
   externalClasses: ['theme-wrapper-class'],
   data: {
+    editId: null,
     locationState: {
       labelIndex: null,
       addressId: '',
@@ -44,12 +63,23 @@ Page({
     labelValue: '',
     columns: 3,
   },
-  privateData: {
-    verifyTips: '',
-  },
+  verifyTips: "",
   onLoad(options) {
-    const { id } = options;
-    this.init(id);
+    const {
+      id
+    } = options;
+    const addr = app.globalData.userAddr.filter(addr => addr.id === id)[0]
+    this.setData({
+      editId: id,
+      locationState: {
+        'provinceName': addr.province,
+        'cityName': addr.city,
+        'districtName': addr.area,
+        'detailAddress': addr.detail,
+        'name': addr.userName,
+        'phone': addr.phoneNumber
+      }
+    })
   },
 
   onUnload() {
@@ -62,26 +92,35 @@ Page({
 
   init(id) {
     if (id) {
-      this.getAddressDetail(Number(id));
+      this.getAddressDetail(id);
     }
   },
   getAddressDetail(id) {
     fetchDeliveryAddress(id).then((detail) => {
-      this.setData({ locationState: detail }, () => {
-        const { isLegal, tips } = this.onVerifyInputLegal();
+      this.setData({
+        locationState: detail
+      }, () => {
+        const {
+          isLegal,
+          tips
+        } = this.onVerifyInputLegal();
         this.setData({
           submitActive: isLegal,
         });
-        this.privateData.verifyTips = tips;
+        this.verifyTips = tips;
       });
     });
   },
   onInputValue(e) {
-    const { item } = e.currentTarget.dataset;
+    const that = this
+    const {
+      item
+    } = e.currentTarget.dataset;
     if (item === 'address') {
-      const { selectedOptions = [] } = e.detail;
-      this.setData(
-        {
+      const {
+        selectedOptions = []
+      } = e.detail;
+      this.setData({
           'locationState.provinceCode': selectedOptions[0].value,
           'locationState.provinceName': selectedOptions[0].label,
           'locationState.cityName': selectedOptions[1].label,
@@ -91,36 +130,49 @@ Page({
           areaPickerVisible: false,
         },
         () => {
-          const { isLegal, tips } = this.onVerifyInputLegal();
-          this.setData({
+          const {
+            isLegal,
+            tips
+          } = that.onVerifyInputLegal();
+          that.setData({
             submitActive: isLegal,
           });
-          this.privateData.verifyTips = tips;
+          that.verifyTips = tips;
         },
       );
     } else {
-      const { value = '' } = e.detail;
-      this.setData(
-        {
+      const {
+        value = ''
+      } = e.detail;
+      this.setData({
           [`locationState.${item}`]: value,
         },
         () => {
-          const { isLegal, tips } = this.onVerifyInputLegal();
-          this.setData({
+          const {
+            isLegal,
+            tips
+          } = that.onVerifyInputLegal();
+          that.setData({
             submitActive: isLegal,
           });
-          this.privateData.verifyTips = tips;
+          that.verifyTips = tips;
         },
       );
     }
   },
   onPickArea() {
-    this.setData({ areaPickerVisible: true });
+    this.setData({
+      areaPickerVisible: true
+    });
   },
   onPickLabels(e) {
-    const { item } = e.currentTarget.dataset;
     const {
-      locationState: { labelIndex = undefined },
+      item
+    } = e.currentTarget.dataset;
+    const {
+      locationState: {
+        labelIndex = undefined
+      },
       labels = [],
     } = this.data;
     let payload = {
@@ -128,7 +180,10 @@ Page({
       addressTag: labels[item].name,
     };
     if (item === labelIndex) {
-      payload = { labelIndex: null, addressTag: '' };
+      payload = {
+        labelIndex: null,
+        addressTag: ''
+      };
     }
     this.setData({
       'locationState.labelIndex': payload.labelIndex,
@@ -141,10 +196,16 @@ Page({
     });
   },
   confirmHandle() {
-    const { labels, labelValue } = this.data;
+    const {
+      labels,
+      labelValue
+    } = this.data;
     this.setData({
       visible: false,
-      labels: [...labels, { id: labels[labels.length - 1].id + 1, name: labelValue }],
+      labels: [...labels, {
+        id: labels[labels.length - 1].id + 1,
+        name: labelValue
+      }],
       labelValue: '',
     });
   },
@@ -154,20 +215,28 @@ Page({
       labelValue: '',
     });
   },
-  onCheckDefaultAddress({ detail }) {
-    const { value } = detail;
+  onCheckDefaultAddress({
+    detail
+  }) {
+    const {
+      value
+    } = detail;
     this.setData({
       'locationState.isDefault': value,
     });
   },
 
   onVerifyInputLegal() {
-    const { name, phone, detailAddress, districtName } = this.data.locationState;
+    const {
+      name,
+      phone,
+      detailAddress,
+      districtName
+    } = this.data.locationState;
     const prefixPhoneReg = String(this.properties.phoneReg || innerPhoneReg);
     const prefixNameReg = String(this.properties.nameReg || innerNameReg);
     const nameRegExp = new RegExp(prefixNameReg);
     const phoneRegExp = new RegExp(prefixPhoneReg);
-
     if (!name || !name.trim()) {
       return {
         isLegal: false,
@@ -216,7 +285,10 @@ Page({
     };
   },
 
-  builtInSearch({ code, name }) {
+  builtInSearch({
+    code,
+    name
+  }) {
     return new Promise((resolve, reject) => {
       wx.getSetting({
         success: (res) => {
@@ -259,7 +331,10 @@ Page({
   },
 
   onSearchAddress() {
-    this.builtInSearch({ code: 'scope.userLocation', name: '地址位置' }).then(() => {
+    this.builtInSearch({
+      code: 'scope.userLocation',
+      name: '地址位置'
+    }).then(() => {
       wx.chooseLocation({
         success: (res) => {
           if (res.name) {
@@ -294,62 +369,78 @@ Page({
       });
     });
   },
-  formSubmit() {
-    const { submitActive } = this.data;
-    if (!submitActive) {
+  async formSubmit() {
+    const {
+      submitActive
+    } = this.data;
+    if (!submitActive && this.verifyTips) {
       Toast({
         context: this,
         selector: '#t-toast',
-        message: this.privateData.verifyTips,
+        message: this.verifyTips,
         icon: '',
         duration: 1000,
       });
       return;
     }
-    const { locationState } = this.data;
-
+    const {
+      locationState
+    } = this.data;
     this.hasSava = true;
-
-    resolveAddress({
-      saasId: '88888888',
-      uid: `88888888205500`,
-      authToken: null,
-      id: locationState.addressId,
-      addressId: locationState.addressId,
-      phone: locationState.phone,
-      name: locationState.name,
-      countryName: locationState.countryName,
-      countryCode: locationState.countryCode,
-      provinceName: locationState.provinceName,
-      provinceCode: locationState.provinceCode,
-      cityName: locationState.cityName,
-      cityCode: locationState.cityCode,
-      districtName: locationState.districtName,
-      districtCode: locationState.districtCode,
-      detailAddress: locationState.detailAddress,
-      isDefault: locationState.isDefault === 1 ? 1 : 0,
-      addressTag: locationState.addressTag,
-      latitude: locationState.latitude,
-      longitude: locationState.longitude,
-      storeId: null,
+    const userInfo = wx.getStorageSync("userInfo")
+    const API = this.data.editId ? updateUserAddrApi : addUserAddrApi
+    const params = {
+      "userId": userInfo.id,
+      "default": locationState.isDefault ? true : false,
+      "country": "中国",
+      "province": locationState.provinceName,
+      "city": locationState.cityName,
+      "area": locationState.districtName,
+      "detail": locationState.detailAddress,
+      "userName": locationState.name,
+      "phoneNumber": locationState.phone,
+    }
+    if (this.data.editId) {
+      params.id = this.data.editId
+    }
+    const res = await API({
+      ...params,
+    })
+    if (!res.addr) {
+      return
+    }
+    if (locationState.isDefault) {
+      await setUserDefaultAddrApi({
+        "userId": userInfo.id,
+        id: res.addr.id
+      })
+    }
+    wx.navigateBack({
+      delta: 1
     });
-
-    wx.navigateBack({ delta: 1 });
   },
 
   getWeixinAddress(e) {
-    const { locationState } = this.data;
+    const that = this
+    const {
+      locationState
+    } = this.data;
     const weixinAddress = e.detail;
-    this.setData(
-      {
-        locationState: { ...locationState, ...weixinAddress },
+    this.setData({
+        locationState: {
+          ...locationState,
+          ...weixinAddress
+        },
       },
       () => {
-        const { isLegal, tips } = this.onVerifyInputLegal();
+        const {
+          isLegal,
+          tips
+        } = this.onVerifyInputLegal();
         this.setData({
           submitActive: isLegal,
         });
-        this.privateData.verifyTips = tips;
+        that.verifyTips = tips;
       },
     );
   },

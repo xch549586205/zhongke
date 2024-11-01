@@ -18,7 +18,7 @@
           <view class="wr-goods-card__specs__desc-text">{{ goods.specs }}</view>
           <t-icon name="chevron-down" size="32rpx" color="#999999" />
         </view>
-        <view class="goods_tips" wx:if="{{goods.stockQuantity !== 0 && goods.quantity >= goods.stockQuantity}}">库存不足</view>
+        <view class="goods_tips" wx:if="{{ goods.sku.kuCun < goods.skuNum}}">库存不足</view>
       </view>
       <view class="wr-goods-card__short_content">
         <block wx:if="{{goods.stockQuantity !== 0}}">

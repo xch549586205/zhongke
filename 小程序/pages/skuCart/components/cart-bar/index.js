@@ -14,17 +14,12 @@ Component({
       type: Number,
       value: 1,
     },
+    disabledToSettle: {
+      type: Boolean,
+    },
     totalGoodsNum: {
       type: Number,
       value: 0,
-      observer(num) {
-        const isDisabled = num == 0;
-        setTimeout(() => {
-          this.setData({
-            isDisabled,
-          });
-        });
-      },
     },
     totalDiscountAmount: {
       type: Number,
@@ -36,13 +31,13 @@ Component({
     },
     fixed: Boolean,
   },
-  data: {
-    isDisabled: false,
-  },
+  data: {},
 
   methods: {
     handleSelectAll() {
-      const { isAllSelected } = this.data;
+      const {
+        isAllSelected
+      } = this.data;
       this.setData({
         isAllSelected: !isAllSelected,
       });
@@ -52,7 +47,7 @@ Component({
     },
 
     handleToSettle() {
-      if (this.data.isDisabled) return;
+      if (this.data.disabledToSettle) return;
       this.triggerEvent('handleToSettle');
     },
   },
