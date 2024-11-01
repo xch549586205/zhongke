@@ -11,7 +11,6 @@ node_modules
 .DS_Store
 dist
 history
-history/
 dist-ssr
 coverage
 *.local

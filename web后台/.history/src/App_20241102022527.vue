@@ -232,7 +232,7 @@ watch(
 <style scope lang="less">
 .page {
   .el-avatar {
-    background: #fff !important;
+    background: #ffffff !important;？
   }
 }
 
