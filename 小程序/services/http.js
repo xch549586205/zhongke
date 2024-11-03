@@ -41,7 +41,7 @@ module.exports = {
         },
         fail(err) {
           wx.showToast({
-            title: "Interface request error",
+            title: err,
             icon: "none",
           });
           reject(err);

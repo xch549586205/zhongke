@@ -1,1 +1,164 @@
-/* pages/createOrder/createOrder.wxss */
+page {
+  background: #F5F5F5;
+}
+
+.orderDetail {
+  padding-bottom: 155rpx;
+}
+
+.address {
+  margin-top: 1rpx;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  padding: 30rpx 32rpx;
+}
+
+.locationIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 32rpx;
+}
+
+.addrInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  min-height: 100rpx;
+}
+
+.addrInfo :nth-child(1) {
+  font-family: PingFangSC-Medium;
+  font-weight: 500;
+  font-size: 32rpx;
+  color: #000000;
+}
+
+.addrInfo :nth-child(2) {
+  font-family: AlibabaPuHuiTi_3_55_Regular;
+  font-weight: 400;
+  font-size: 28rpx;
+  color: #000000;
+  letter-spacing: 0;
+  margin-top: 16rpx;
+}
+
+.noAddress {
+  color: #999;
+  min-height: 100rpx;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+}
+
+.sku {
+  padding: 24rpx 32rpx 24rpx;
+  background-color: white;
+  margin-top: 16rpx;
+}
+
+.price-total {
+  font-size: 24rpx;
+  line-height: 32rpx;
+  color: #999999;
+  padding-top: 10rpx;
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+}
+
+.price-total .bold-price {
+  color: #333333;
+  font-size: 28rpx;
+  line-height: 40rpx;
+  color: #333333;
+}
+
+.price-total .real-pay {
+  font-size: 36rpx;
+  line-height: 48rpx;
+  color: #fa4126;
+  font-weight: bold;
+}
+
+.cellWrap {
+  background: #FFFFFF;
+  margin-top: 16rpx;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  padding: 0 32rpx;
+  height: 101rpx;
+  border-bottom: 1rpx solid #F5F5F5;
+  justify-content: space-between;
+}
+
+.left {
+  font-family: AlibabaPuHuiTi_3_55_Regular;
+  font-weight: 400;
+  font-size: 28rpx;
+  color: #111111;
+  letter-spacing: 0;
+}
+
+.right {
+  font-family: AlibabaPuHuiTi_3_75_SNaNrpxiBold;
+  font-weight: 600;
+  font-size: 28rpx;
+  color: #15409D;
+  letter-spacing: 0;
+  text-align: right;
+}
+
+.color666 {
+  color: #666;
+  font-family: AlibabaPuHuiTi_3_55_Regular;
+  font-weight: 400;
+  font-size: 28rpx;
+  color: #666666;
+  letter-spacing: 0;
+  text-align: right;
+}
+
+.fixedBtn {
+  height: 120rpx;
+  background: #FFFFFF;
+  position: fixed;
+  width: calc(100% - 64rpx);
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 32rpx 20rpx 32rpx;
+  justify-content: space-between;
+}
+
+.fixedBtn .total {
+  font-family: PingFangSC-Regular;
+  font-weight: 400;
+  font-size: 28rpx;
+  color: #000000;
+  letter-spacing: 0;
+  text-align: right;
+}
+
+.fixedBtn .total span {
+  font-family: PingFangSC-Medium;
+  font-weight: 500;
+  font-size: 36rpx;
+  color: #F2270C;
+  letter-spacing: 0;
+  text-align: right;
+}
+
+.btns {
+  display: flex;
+  align-items: center;
+}
+
+.btn {
+  margin: 0 32rpx;
+}

@@ -1,11 +1,12 @@
 export const OrderStatus = {
-  PENDING_PAYMENT: 5, // 待支付
-  PENDING_DELIVERY: 10, // 待发货
-  PENDING_RECEIPT: 40, // 待收货
-  COMPLETE: 50, // 已完成/待评价
+  PENDING_PAYMENT: [1], // 待支付
+  PENDING_DELIVERY: [2], // 待发货
+  PENDING_RECEIPT: [3], // 待收货
+  COMPLETE: [4], // 已完成/待评价
+  AFTER: [5, 6], // 售后
   PAYMENT_TIMEOUT: 80, // 已取消，支付超时
   CANCELED_NOT_PAYMENT: 80, // 已取消，未支付主动取消
-  CANCELED_PAYMENT: 80, // 已取消，已支付主动取消
+  CANCELED_PAYMENT: 80, // 已取消，已支付faU动取消
   CANCELED_REJECTION: 80, // 已取消，拒收
 };
 

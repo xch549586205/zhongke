@@ -48,9 +48,16 @@ Page({
     },
     current: 0,
     isSpuSelectPopupShow: false,
-    isParamPopupShow: false
+    isParamPopupShow: false,
+    cart: {}
   },
   computed: {
+    shopCartNum(data) {
+      const {
+        cart
+      } = data
+      return cart.orderSku ? cart.orderSku.length : 0
+    },
     currentSku(data) {
       const {
         goodsSku
@@ -133,8 +140,11 @@ Page({
       const {
         id,
         orderSku
-      } = app.globalData.cart
+      } = this.data.cart
       if (orderSku.filter(os => os.skuId === this.data.currentSku.id).length) {
+        this.setData({
+          selectedSkuId: ''
+        })
         wx.showToast({
           title: '该商品在购物车里已存在！',
           duration: 2000,
@@ -148,6 +158,10 @@ Page({
           skuId: this.data.currentSku.id,
           skuNum: this.data.buyNum
         }]
+      })
+      app.globalData.cart = res.data
+      this.setData({
+        cart: res.data
       })
     } catch (error) {
       console.error(error)
@@ -233,7 +247,12 @@ Page({
     })
     this.closeSkuSelectPopup()
   },
-
+  async getCar() {
+    const cart = await app.getCartById()
+    this.setData({
+      cart
+    })
+  },
 
   onLoad(query) {
     const {
@@ -242,6 +261,7 @@ Page({
     this.setData({
       goodsId: goodsId,
     });
+    this.getCar();
     this.getDetail(goodsId);
   },
 });

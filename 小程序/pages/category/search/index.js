@@ -117,7 +117,14 @@ Page({
       dialogShow: true,
     });
   },
-
+  handleWordsTap(e) {
+    const words = this.data.popularWords[e.currentTarget.dataset.index]
+    if (words) {
+      wx.navigateTo({
+        url: `/pages/goodsList/goodsList?searchValue=${words}`,
+      });
+    }
+  },
   handleHistoryTap(e) {
     const {
       historyWords
@@ -132,7 +139,6 @@ Page({
       });
     }
   },
-
   handleSubmit(e) {
     const {
       value

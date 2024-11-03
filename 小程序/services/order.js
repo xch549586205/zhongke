@@ -14,4 +14,14 @@ module.exports = {
   getOrderApi: (data) => request("/order/getOrder", "POST", {
     ...data,
   }),
+  deleteOrderApi: (data) => request("/order/deleteOrder", "POST", {
+    ...data,
+    successMessage: '订单已取消'
+  }),
+  updateOrderAddrApi: (data) => request("/order/updateOrderAddr", "POST", {
+    ...data,
+  }),
+  getOrderNumApi: (data) => request("/order/getOrderNum", "POST", {
+    ...data,
+  }),
 };

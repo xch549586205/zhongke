@@ -18,6 +18,8 @@ App({
         setTimeout(currentPage.init, 200)
       }
     } else {
+      const userInfo = wx.getStorageSync("userInfo")
+      this.globalData.userInfo = userInfo
       this.getCartById()
     }
   },

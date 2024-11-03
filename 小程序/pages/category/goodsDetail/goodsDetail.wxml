@@ -51,7 +51,7 @@
     </view>
   </view>
   <view class="goods-bottom-operation">
-    <buy-bar jumpArray="{{jumpArray}}" shopCartNum="{{1}}" buttonType="{{1}}" bind:toAddCart="clickAddCar" bind:toNav="toNav" bind:toBuyNow="buyItNow" class="goods-details-card" />
+    <buy-bar jumpArray="{{jumpArray}}" shopCartNum="{{shopCartNum}}" buttonType="{{1}}" bind:toAddCart="clickAddCar" bind:toNav="toNav" bind:toBuyNow="buyItNow" class="goods-details-card" />
   </view>
   <goods-specs-popup id="goodsSpecsPopup" wx:if="{{isSpuSelectPopupShow}}" selectedSkuId="{{selectedSkuId}}" show="{{isSpuSelectPopupShow}}" goodsInfo='{{goodsInfo}}' image="{{goodsBanners[0]}}" buyNum="{{buyNum}}" bind:closeSkuSelectPopup="closeSkuSelectPopup" bind:skuConfirm='skuConfirm' bind:addCart="addCart" bind:buyNow="gotoBuy" bind:specsConfirm="specsConfirm">
   </goods-specs-popup>

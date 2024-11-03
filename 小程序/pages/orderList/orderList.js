@@ -18,7 +18,9 @@ import {
 import {
   cosThumb
 } from '../../utils/util';
-import moment from "moment"
+import {
+  orderTagInfos
+} from '../usercenter/index'
 Page({
   page: {
     size: 7,
@@ -26,7 +28,7 @@ Page({
   },
   data: {
     tabs: [{
-        key: -1,
+        key: [],
         text: '全部'
       },
       {
@@ -48,20 +50,38 @@ Page({
         key: OrderStatus.COMPLETE,
         text: '已完成',
         info: ''
+      }, {
+        key: OrderStatus.AFTER,
+        text: '售后',
+        info: ''
       },
     ],
     curTab: -1,
     orderList: [],
     listLoading: 0,
     pullDownRefreshing: false,
-    emptyImg: 'https://cdn-we-retail.ym.tencent.com/miniapp/order/empty-order-list.png',
     backRefresh: false,
-    status: -1,
+    status: [],
   },
 
   onLoad(query) {
-    let status = parseInt(query.status);
-    status = this.data.tabs.map((t) => t.key).includes(status) ? status : -1;
+    const {
+      tabType
+    } = query
+    const typeForStatus = {
+      1: [1],
+      2: [2],
+      3: [3],
+      4: [4],
+      5: [5, 6],
+    }
+    let status = []
+    if (tabType) {
+      status = typeForStatus[tabType]
+      this.setData({
+        status
+      })
+    }
     this.init(status);
     this.pullDownRefresh = this.selectComponent('#wr-pull-down-refresh');
   },
@@ -85,9 +105,6 @@ Page({
   },
 
   onPullDownRefresh_(e) {
-    const {
-      callback
-    } = e.detail;
     this.setData({
       pullDownRefreshing: true
     });
@@ -96,7 +113,6 @@ Page({
         this.setData({
           pullDownRefreshing: false
         });
-        callback && callback();
       })
       .catch((err) => {
         this.setData({
@@ -114,12 +130,12 @@ Page({
     this.refreshList(status);
   },
 
-  getOrderList(orderStatusId = -1, reset = false) {
+  getOrderList(orderStatusId = [], reset = false) {
     const params = {
       page: this.page.num,
       pageSize: this.page.size,
     };
-    if (orderStatusId !== -1) params.orderStatus = orderStatusId;
+    if (orderStatusId !== []) params.orderStatusId = orderStatusId;
     this.setData({
       listLoading: 1
     });
@@ -135,7 +151,7 @@ Page({
               status: order.orderStatus.name,
               statusDesc: order.orderStatus.name,
               totalAmount: getTotalAmount(order.orderSku),
-              goodsList: (order.orderSku || []).map((goods) => ({
+              skuList: (order.orderSku || []).map((goods) => ({
                 id: goods.id,
                 thumb: baseUrl + "/" + goods.sku.zkGoods.goodsBanners[0].url,
                 title: goods.sku.zkGoods.name,
@@ -207,7 +223,7 @@ Page({
     });
   },
 
-  refreshList(status = -1) {
+  refreshList(status = []) {
     this.page = {
       size: this.page.size,
       num: 1,

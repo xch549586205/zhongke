@@ -17,23 +17,21 @@ Page({
     addressList: [],
     deleteID: '',
     showDeleteConfirm: false,
+    selectMode: false,
     isOrderSure: false,
   },
 
   /** 选择模式 */
-  selectMode: false,
   /** 是否已经选择地址，不置为true的话页面离开时会触发取消选择行为 */
   hasSelect: false,
 
   onLoad(query) {
-    // const {
-    //   selectMode = '', isOrderSure = '', id = ''
-    // } = query;
-    // this.setData({
-    //   isOrderSure: !!isOrderSure,
-    //   id,
-    // });
-    // this.selectMode = !!selectMode;
+    const {
+      selectMode = ''
+    } = query;
+    this.setData({
+      selectMode: Boolean(selectMode)
+    })
     // this.init();
   },
   onShow() {
@@ -44,9 +42,9 @@ Page({
     this.getAddressList();
   },
   onUnload() {
-    if (this.selectMode && !this.hasSelect) {
-      rejectAddress();
-    }
+    // if (this.selectMode && !this.hasSelect) {
+    //   rejectAddress();
+    // }
   },
 
   async getAddressList() {
@@ -58,6 +56,14 @@ Page({
       id: userInfo.id
     })
     app.globalData.userAddr = res.user.userAddr
+    const pages = getCurrentPages(); // 获取当前页面栈
+    const prevPage = pages[pages.length - 1 - 1]; // 目标页面
+    if (this.data.selectMode && res.user.userAddr.findIndex(addr => addr.id === prevPage.data.addrId) === -1) {
+      // 如果上个页面选中的地址没有了（被删了） ，上个页面选中的地址要清空
+      prevPage.setData({
+        addrId: ''
+      });
+    }
     this.setData({
       addressList: res.user.userAddr.map(addr => {
         return {
@@ -168,9 +174,14 @@ Page({
   selectHandle({
     detail
   }) {
-    if (this.selectMode) {
+    if (this.data.selectMode) {
       this.hasSelect = true;
-      resolveAddress(detail);
+      // resolveAddress(detail);
+      const pages = getCurrentPages(); // 获取当前页面栈
+      const prevPage = pages[pages.length - 1 - 1]; // 目标页面
+      prevPage.setData({
+        addrId: detail.id
+      });
       wx.navigateBack({
         delta: 1
       });

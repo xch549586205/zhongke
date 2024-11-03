@@ -183,12 +183,12 @@ Page({
     this.handleCart(cart)
   },
 
-
   handleCart(cart) {
     const userInfo = wx.getStorageSync("userInfo")
     const {
       authorityId
     } = userInfo
+    app.globalData.cart = cart
     this.setData({
       cart: {
         ...cart,

@@ -4,6 +4,7 @@ import {
   ComponentWithComputed
 } from 'miniprogram-computed';
 import Toast from 'tdesign-miniprogram/toast/index';
+const app = getApp()
 
 ComponentWithComputed({
   computed: {
@@ -86,6 +87,16 @@ ComponentWithComputed({
     },
 
     skuConfirm() {
+      console.log(app.globalData, 123)
+      const cart = app.globalData.cart
+      if (cart && cart.orderSku && cart.orderSku.length && cart.orderSku.filter(sku => sku.skuId === this.data.selectedSkuId).length) {
+        wx.showToast({
+          title: '该商品在购物车里已存在！',
+          duration: 2000,
+          icon: "none"
+        })
+        return
+      }
       this.triggerEvent('skuConfirm', {
         buyNum: this.data.buyNum,
         selectedSkuId: this.data.selectedSkuId

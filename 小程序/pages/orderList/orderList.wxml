@@ -8,10 +8,10 @@
   <t-pull-down-refresh id="pull-down-refresh" normal-bar-height="{{200}}" max-bar-height="{{272}}" refreshTimeout="{{3000}}" background="#f5f5f5" use-loading-slot loading-size="60rpx" bindrefresh="onPullDownRefresh_" t-class-indicator="t-class-indicator">
     <order-card wx:for="{{orderList}}" wx:key="id" wx:for-item="order" wx:for-index="oIndex" order="{{order}}" defaultShowNum="{{3}}" data-order="{{order}}" bindcardtap="onOrderCardTap" useLogoSlot>
       <view slot="top-left" class="order-number">
-        <text decode>订单号&nbsp;</text>
+        <text decode>订单：</text>
         {{order.orderNo}}
       </view>
-      <specs-goods-card wx:for="{{order.goodsList}}" wx:key="id" wx:for-item="goods" wx:for-index="gIndex" data="{{goods}}" no-top-line="{{gIndex === 0}}" />
+      <specs-goods-card wx:for="{{order.skuList}}" wx:key="id" wx:for-item="sku" wx:for-index="gIndex" data="{{sku}}" no-top-line="{{gIndex === 0}}" />
       <view slot="more">
         <view class="price-total">
           <text>总价</text>
@@ -29,8 +29,8 @@
     <!-- 列表加载中/已全部加载 -->
     <load-more wx:if="{{!pullDownRefreshing}}" list-is-empty="{{!orderList.length}}" status="{{listLoading}}" bindretry="onReTryLoad">
       <!-- 空态 -->
-      <view slot="empty" class="empty-wrapper">
-        <t-empty t-class="t-empty-text" src="{{emptyImg}}">暂无相关订单</t-empty>
+      <view slot="empty" class="empty-wrapper" wx:if="{{!orderList.length}}">
+        <t-empty icon="info-circle-filled" description="暂无相关订单" />
       </view>
     </load-more>
   </t-pull-down-refresh>

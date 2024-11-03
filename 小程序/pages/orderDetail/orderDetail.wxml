@@ -1,22 +1,64 @@
-<view>
-  <order-card wx:for="{{orderList}}" wx:key="id" wx:for-item="order" wx:for-index="oIndex" order="{{order}}" defaultShowNum="{{3}}" data-order="{{order}}" bindcardtap="onOrderCardTap" useLogoSlot>
-    <view slot="top-left" class="order-number">
-      <text decode>订单号&nbsp;</text>
-      {{order.orderNo}}
+<view class="orderDetail">
+  <view class="address" bind:tap="goAddr">
+    <view class="locationIcon">
+      <t-icon name="location" size="48rpx" bind:click="onIconTap" />
     </view>
-    <specs-goods-card wx:for="{{order.goodsList}}" wx:key="id" wx:for-item="goods" wx:for-index="gIndex" data="{{goods}}" no-top-line="{{gIndex === 0}}" />
-    <view slot="more">
-      <view class="price-total">
-        <text>总价</text>
-        <price fill price="{{order.totalAmount + ''}}" />
-        <text>，运费</text>
-        <price fill price="{{order.freightFee + ''}}" />
-        <text decode>&nbsp;</text>
-        <text class="bold-price" decode="{{true}}">实付&nbsp;</text>
-        <price fill class="real-pay" price="{{order.totalAmount + ''}}" decimalSmaller />
-      </view>
-      <!-- 订单按钮栏 -->
-      <order-button-bar order="{{order}}" bindrefresh="onRefresh" data-order="{{order}}" />
+    <view class="addrInfo" wx:if="{{currentAddress||addressNamePhone}}">
+      <view> {{currentAddress}}</view>
+      <view> {{addressNamePhone}}</view>
     </view>
-  </order-card>
+    <view class="noAddress" wx:else>
+      请选择地址
+    </view>
+    <view style="margin-left: auto;">
+      <t-icon name="chevron-right" color="rgba(0,0,0,0.3)" size="40rpx" bind:click="onIconTap" />
+    </view>
+  </view>
+  <view class="sku">
+    <specs-goods-card wx:for="{{skuList}}" wx:key="id" wx:for-item="sku" wx:for-index="gIndex" data="{{sku}}" no-top-line="{{gIndex === 0}}" />
+  </view>
+  <view class="cellWrap">
+    <view class="cell">
+      <view class="left">商品价格</view>
+      <view class="right">¥{{totalAmount}}</view>
+    </view>
+    <view class="cell">
+      <view class="left">运费</view>
+      <view class="right">¥0.00</view>
+    </view>
+    <!-- <view class="cell">
+      <view class="left">优惠券/折扣</view>
+      <view class="right">¥0.00</view>
+    </view> -->
+    <view class="cell">
+      <view class="left">实际付款</view>
+      <view class="right">¥{{totalAmount}}</view>
+    </view>
+  </view>
+  <view class="cellWrap">
+    <view class="cell">
+      <view class="left">订单编号</view>
+      <view class="right color666">{{orderDetail.id}}</view>
+    </view>
+    <view class="cell">
+      <view class="left">下单时间</view>
+      <view class="right color666">{{orterCreateTime}}</view>
+    </view>
+    <!-- <view class="cell">
+      <view class="left">支付时间</view>
+      <view class="right color666">¥{{totalAmount}}</view>
+    </view> -->
+  </view>
+
 </view>
+
+<view class="fixedBtn">
+  <view class="total">合计：<span>{{totalAmount}}</span></view>
+  <view class="btns">
+    <t-button theme="primary" variant="outline" class="btn" shape="round" bind:tap="onCancelClick">
+      取消订单
+    </t-button>
+  </view>
+</view>
+
+<t-dialog visible="{{cancleDialogVisible}}" title="确定取消此订单吗？" content="订单取消后将无法找回，请谨慎操作" cancel-btn="取消" confirm-btn="{{ confirmBtn }}" bind:cancel="closeCancleDialog" bind:confirm="onConfirmCancle" />

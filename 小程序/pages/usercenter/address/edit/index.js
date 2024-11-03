@@ -68,6 +68,9 @@ Page({
     const {
       id
     } = options;
+    if (!app.globalData.userAddr || !app.globalData.userAddr.length) {
+      return
+    }
     const addr = app.globalData.userAddr.filter(addr => addr.id === id)[0]
     this.setData({
       editId: id,

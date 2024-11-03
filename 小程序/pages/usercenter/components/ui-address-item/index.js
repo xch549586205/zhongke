@@ -4,6 +4,10 @@ Component({
     multipleSlots: true,
   },
   properties: {
+    selectMode: {
+      type: Boolean,
+      value: false,
+    },
     address: {
       type: Object,
       value: {},

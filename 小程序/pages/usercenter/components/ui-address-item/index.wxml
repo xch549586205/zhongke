@@ -21,7 +21,7 @@
           </text>
         </view>
       </view>
-      <view catch:tap="onEdit" data-item="{{address}}" class="address-edit">
+      <view catch:tap="onEdit" data-item="{{address}}" wx:if="{{!selectMode}}" class="address-edit">
         <t-icon name="{{customIcon}}" class-prefix="{{classPrefix}}" size="46rpx" color="#BBBBBB" />
       </view>
     </view>
